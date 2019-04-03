@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Card } from '../src/elements/index.js';
+import { ActionButton, Card } from '../src/elements/index.js';
 declare global {
     interface Window {
         PerceptionToolkit: {
@@ -37,6 +37,7 @@ declare global {
             };
             Elements: {
                 Card: typeof Card;
+                ActionButton: typeof ActionButton;
             };
             Functions: {
                 initializeExperience: typeof initializeExperience;

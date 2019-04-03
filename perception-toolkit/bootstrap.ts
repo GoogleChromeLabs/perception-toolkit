@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Card } from '../src/elements/index.js';
+import { ActionButton, Card } from '../src/elements/index.js';
 import { DeviceSupport } from '../src/support/device-support.js';
 import { GetUserMediaSupport } from '../src/support/get-user-media.js';
 import { WasmSupport } from '../src/support/wasm.js';
@@ -46,6 +46,7 @@ declare global {
 
       Elements: {
         Card: typeof Card;
+        ActionButton: typeof ActionButton;
       };
 
       Functions: {
@@ -71,6 +72,7 @@ window.PerceptionToolkit.Events = {
 
 // Expose elements.
 window.PerceptionToolkit.Elements = {
+  ActionButton,
   Card
 };
 

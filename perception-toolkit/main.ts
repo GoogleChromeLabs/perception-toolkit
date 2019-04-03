@@ -35,7 +35,7 @@ import { Marker } from '../defs/marker.js';
 import { NearbyResultDelta } from '../src/artifacts/artifact-dealer.js';
 import { MeaningMaker } from './meaning-maker.js';
 
-import { cameraAccessDenied, markerDetect, markerChanges, captureStopped } from './events.js';
+import { cameraAccessDenied, markerChanges, markerDetect } from './events.js';
 
 const detectedMarkers = new Map<string, number>();
 

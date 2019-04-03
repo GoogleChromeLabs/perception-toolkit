@@ -156,42 +156,50 @@
           '/demo/images/step3.jpg'
         ],
         hintTimeout: 7000,
-        sitemapUrl: './barcode-listing-sitemap.jsonld'
+        sitemapUrl: './barcode-listing-sitemap.jsonld',
+        onload() {
+          addEventListeners();
+        }
       };
 
-      // Fires with a diff of markers found & lost.
-      window.addEventListener('markerchanges', (evt) => {
-        const { found, lost } = evt.detail;
+      // When the toolkit loads, add event listeners.
+      function addEventListeners() {
+        const PT = window.PerceptionToolkit;
 
-        // For the cases where we know something was found,
-        // ignore. For the zero case we know there was a
-        // scan of something we don't currently recognize.
-        if (found.length !== 0 || lost.length !== 0) {
-          return;
-        }
+        // Fires with a diff of markers found & lost.
+        window.addEventListener(PT.Events.MarkerChanges, (evt) => {
+          const { found, lost } = evt.detail;
 
-        const { Card } = window.PerceptionToolkit.Main;
-        const card = new Card();
-        card.src = 'Sorry, this item was not recognized.';
-        cardContainer.appendChild(card);
-      });
+          // For the cases where we know something was found,
+          // ignore. For the zero case we know there was a
+          // scan of something we don't currently recognize.
+          if (found.length !== 0 || lost.length !== 0) {
+            return;
+          }
 
-      // Fires the if the user denies camera access.
-      window.addEventListener('cameraaccessdenied', () => {
-        const { Card } = window.PerceptionToolkit.Main;
-        const card = new Card();
-        card.src = 'Camera unavailable or access denied';
-        cardContainer.appendChild(card);
-      });
+          const { Card } = window.PerceptionToolkit.Main;
+          const card = new Card();
+          card.src = 'Sorry, this item was not recognized.';
+          cardContainer.appendChild(card);
+        });
 
-      // Fires the if the device does not have the required APIs.
-      window.addEventListener('devicenotsupported', () => {
-        console.warn('Device Not Supported');
-      });
+        // Fires the if the user denies camera access.
+        window.addEventListener(PT.Events.CameraAccessDenied, () => {
+          const { Card } = window.PerceptionToolkit.Main;
+          const card = new Card();
+          card.src = 'Camera unavailable or access denied';
+          cardContainer.appendChild(card);
+        });
 
-      // Add the toolkit.
+        // Fires the if the device does not have the required APIs.
+        window.addEventListener(PT.Events.DeviceNotSupported, () => {
+          console.warn('Device Not Supported');
+        });
+      }
+
+      // Embed the toolkit.
       const toolkit = document.createElement('script');
-      toolkit.src = '/lib/bundled/perception-toolkit/bootstrap.min.js';
+      toolkit.src = '/lib/bundled/bootstrap.js';
       document.head.appendChild(toolkit);
     }
 

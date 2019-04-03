@@ -14,6 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export declare const captureStopped = "pt.capturestopped";
+/**
+ * The name for captured frame events.
+ */
+export declare const frameEvent = "pt.captureframe";
+/**
+ * The name for start capture events.
+ */
+export declare const startEvent = "pt.capturestarted";
+/**
+ * The name for stop capture events.
+ */
+export declare const stopEvent = "pt.capturestopped";
+/**
+ * The name for stop capture events.
+ */
+export declare const closeEvent = "pt.captureclose";
 /**
  * Provides an element that abstracts the capture of stream frames. For example,
  * given a `getUserMedia` video stream, this will -- if desired -- capture an
@@ -48,22 +65,6 @@ export declare class StreamCapture extends HTMLElement {
      * `customElements.define`.
      */
     static defaultTagName: string;
-    /**
-     * The name for captured frame events.
-     */
-    static frameEvent: string;
-    /**
-     * The name for start capture events.
-     */
-    static startEvent: string;
-    /**
-     * The name for stop capture events.
-     */
-    static stopEvent: string;
-    /**
-     * The name for stop capture events.
-     */
-    static closeEvent: string;
     /**
      * The sample scale, intended to go between `0` and `1` (though clamped only
      * to `0` in case you wish to sample at a larger scale).

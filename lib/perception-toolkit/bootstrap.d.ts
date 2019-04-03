@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Card } from '../src/elements/index.js';
 declare global {
     interface Window {
         PerceptionToolkit: {
@@ -29,19 +30,17 @@ declare global {
                 detectionMode?: 'active' | 'passive';
                 showLoaderDuringBoot?: boolean;
                 sitemapUrl?: string;
+                onload?: () => void;
             };
-            Loader: {
-                hideLoader(): void;
-                showLoader(): void;
+            Events: {
+                [key: string]: string;
             };
-            Main: {
-                initialize(opts: {
-                    detectionMode?: 'active' | 'passive';
-                    sitemapUrl?: string;
-                }): void;
+            Elements: {
+                Card: typeof Card;
             };
-            Onboarding: {
-                startOnboardingProcess(images: string[]): Promise<void>;
+            Functions: {
+                initializeExperience: typeof initializeExperience;
+                closeExperience: () => void;
             };
         };
     }
@@ -49,4 +48,5 @@ declare global {
 /**
  * Initialize the experience.
  */
-export declare function initializeExperience(): Promise<void>;
+declare function initializeExperience(): Promise<void>;
+export {};

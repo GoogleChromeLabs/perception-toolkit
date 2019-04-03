@@ -21,7 +21,7 @@ import { Card, CardData } from '../src/elements/card/card.js';
 import { DotLoader } from '../src/elements/dot-loader/dot-loader.js';
 import { OnboardingCard } from '../src/elements/onboarding-card/onboarding-card.js';
 import { hideOverlay, showOverlay } from '../src/elements/overlay/overlay.js';
-import { StreamCapture } from '../src/elements/stream-capture/stream-capture.js';
+import { closeEvent, frameEvent, StreamCapture } from '../src/elements/stream-capture/stream-capture.js';
 import { supportsEnvironmentCamera } from '../src/utils/environment-camera.js';
 import { fire } from '../src/utils/fire.js';
 import { DEBUG_LEVEL, enableLogLevel, log } from '../src/utils/logger.js';
@@ -35,10 +35,9 @@ import { Marker } from '../defs/marker.js';
 import { NearbyResultDelta } from '../src/artifacts/artifact-dealer.js';
 import { MeaningMaker } from './meaning-maker.js';
 
+import { cameraAccessDenied, markerDetect, markerChanges, captureStopped } from './events.js';
+
 const detectedMarkers = new Map<string, number>();
-const markerDetect = 'markerdetect';
-const cameraAccessDenied = 'cameraaccessdenied';
-const markerChanges = 'markerchanges';
 
 const meaningMaker = new MeaningMaker();
 
@@ -48,7 +47,7 @@ customElements.define(Card.defaultTagName, Card);
 customElements.define(ActionButton.defaultTagName, ActionButton);
 
 // Register events.
-window.addEventListener(StreamCapture.frameEvent, onCaptureFrame);
+window.addEventListener(frameEvent, onCaptureFrame);
 window.addEventListener('offline', onConnectivityChanged);
 window.addEventListener('online', onConnectivityChanged);
 
@@ -159,11 +158,11 @@ async function createStreamCapture(detectionMode: 'active' | 'passive') {
       capture.paused = true;
       showOverlay('Processing...');
       const imgData = await capture.captureFrame();
-      fire(StreamCapture.frameEvent, capture, {imgData, detectionMode});
+      fire(frameEvent, capture, {imgData, detectionMode});
     });
   }
   capture.captureScale = 0.8;
-  capture.addEventListener(StreamCapture.closeEvent, close);
+  capture.addEventListener(closeEvent, close);
   capture.addEventListener(markerDetect, onMarkerFound);
 
   const streamOpts = {

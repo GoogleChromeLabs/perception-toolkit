@@ -19,6 +19,27 @@ import { clamp } from '../../utils/clamp.js';
 import { fire } from '../../utils/fire.js';
 import { html, styles } from './stream-capture.template.js';
 
+export const captureStopped = 'pt.capturestopped';
+/**
+ * The name for captured frame events.
+ */
+export const frameEvent = 'pt.captureframe';
+
+/**
+ * The name for start capture events.
+ */
+export const startEvent = 'pt.capturestarted';
+
+/**
+ * The name for stop capture events.
+ */
+export const stopEvent = 'pt.capturestopped';
+
+/**
+ * The name for stop capture events.
+ */
+export const closeEvent = 'pt.captureclose';
+
 /**
  * Provides an element that abstracts the capture of stream frames. For example,
  * given a `getUserMedia` video stream, this will -- if desired -- capture an
@@ -53,26 +74,6 @@ export class StreamCapture extends HTMLElement {
    * `customElements.define`.
    */
   static defaultTagName = 'stream-capture';
-
-  /**
-   * The name for captured frame events.
-   */
-  static frameEvent = 'captureframe';
-
-  /**
-   * The name for start capture events.
-   */
-  static startEvent = 'capturestarted';
-
-  /**
-   * The name for stop capture events.
-   */
-  static stopEvent = 'capturestopped';
-
-  /**
-   * The name for stop capture events.
-   */
-  static closeEvent = 'captureclose';
 
   /**
    * The sample scale, intended to go between `0` and `1` (though clamped only
@@ -122,7 +123,7 @@ export class StreamCapture extends HTMLElement {
         return;
       }
 
-      fire(StreamCapture.closeEvent, this);
+      fire(closeEvent, this);
     });
   }
 
@@ -205,7 +206,7 @@ export class StreamCapture extends HTMLElement {
 
       requestAnimationFrame((now) => {
         update(now);
-        fire(StreamCapture.startEvent, this);
+        fire(startEvent, this);
       });
     }, { once: true });
   }
@@ -228,7 +229,7 @@ export class StreamCapture extends HTMLElement {
         imgData.src = canvas.toDataURL('image/png');
         imgData.onload = () => {
           if (this.captureRate !== 0) {
-            fire(StreamCapture.frameEvent, this, {imgData});
+            fire(frameEvent, this, {imgData});
           }
 
           resolve(imgData);
@@ -236,7 +237,7 @@ export class StreamCapture extends HTMLElement {
       } else {
         imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         if (this.captureRate !== 0) {
-          fire(StreamCapture.frameEvent, this, {imgData});
+          fire(frameEvent, this, {imgData});
         }
 
         resolve(imgData);
@@ -265,7 +266,7 @@ export class StreamCapture extends HTMLElement {
     this.canvas = undefined;
     this.ctx = undefined;
 
-    fire(StreamCapture.stopEvent, this);
+    fire(stopEvent, this);
   }
 
   private setReticleOrientation(vertical: boolean) {

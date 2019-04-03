@@ -20,7 +20,7 @@ import { DeviceSupport } from '../src/support/device-support.js';
 import { GetUserMediaSupport } from '../src/support/get-user-media.js';
 import { WasmSupport } from '../src/support/wasm.js';
 import { fire } from '../src/utils/fire.js';
-import { injectScript } from '../src/utils/inject-script.js';
+import { cameraAccessDenied, captureStopped, markerChanges } from './events.js';
 
 declare global {
   interface Window {
@@ -37,37 +37,60 @@ declare global {
         detectionMode?: 'active' | 'passive',
         showLoaderDuringBoot?: boolean,
         sitemapUrl?: string,
+        onload?: () => void
       },
 
-      Loader: {
-        hideLoader(): void;
-        showLoader(): void;
-      },
+      Events: {
+        [key: string]: string;
+      };
 
-      Main: {
-        initialize(opts: {
-          detectionMode?: 'active' | 'passive',
-          sitemapUrl?: string
-        }): void;
-      },
+      Elements: {
+        Card: typeof Card;
+      };
 
-      Onboarding: {
-        startOnboardingProcess(images: string[]): Promise<void>;
+      Functions: {
+        initializeExperience: typeof initializeExperience;
+        closeExperience: () => void;
       }
     };
   }
 }
 
-const deviceNotSupported = 'devicenotsupported';
+const deviceNotSupported = 'pt.devicenotsupported';
 
 window.PerceptionToolkit.config = window.PerceptionToolkit.config || {};
+
+// Expose events.
+window.PerceptionToolkit.Events = {
+  CameraAccessDenied: cameraAccessDenied,
+  CaptureStopped: captureStopped,
+  DeviceNotSupported: deviceNotSupported,
+  MarkerChanges: markerChanges,
+};
+
+// Expose elements.
+window.PerceptionToolkit.Elements = {
+  Card
+};
+
+// Expose functions.
+window.PerceptionToolkit.Functions = {
+  initializeExperience,
+  closeExperience() {
+    // Replaced when main.ts has loaded.
+  }
+};
+
+if (window.PerceptionToolkit.config.onload) {
+  window.PerceptionToolkit.config.onload.call(null);
+}
 
 /**
  * Perform a device support test, then load the loader & onboarding.
  */
 const load: Promise<boolean> = new Promise(async (resolve) => {
   const { config } = window.PerceptionToolkit;
-  const { root = '', showLoaderDuringBoot = true } = config;
+  const { showLoaderDuringBoot = true } = config;
 
   // Detect the necessary support.
   const deviceSupport = new DeviceSupport();
@@ -78,17 +101,16 @@ const load: Promise<boolean> = new Promise(async (resolve) => {
   // If everything necessary is supported, inject the loader and show it if
   // desired.
   if (support[GetUserMediaSupport.name] && support[WasmSupport.name]) {
-    await injectScript(`${root}/lib/bundled/perception-toolkit/loader.min.js`);
+    const { showLoader } = await import('./loader.js');
 
     // Only show the loader if requested.
     if (showLoaderDuringBoot) {
-      const { showLoader } = window.PerceptionToolkit.Loader;
       showLoader();
     }
 
     // Conditionally load the onboarding.
     if (config.onboarding && config.onboardingImages) {
-      await injectScript(`${root}/lib/bundled/perception-toolkit/onboarding.min.js`);
+      await import('./onboarding.js');
     }
     resolve(true);
   } else {
@@ -96,14 +118,13 @@ const load: Promise<boolean> = new Promise(async (resolve) => {
   }
 });
 
-let mainHasLoaded: {};
 /**
  * Initialize the experience.
  */
-export async function initializeExperience() {
+async function initializeExperience() {
   const supported = await load;
   if (!supported) {
-    const { hideLoader } = window.PerceptionToolkit.Loader;
+    const { hideLoader } = await import('./loader.js');
     hideLoader();
 
     const deviceNotSupportedEvt = fire(deviceNotSupported, window);
@@ -116,26 +137,24 @@ export async function initializeExperience() {
     return;
   }
 
-  const { showLoader, hideLoader } = window.PerceptionToolkit.Loader;
+  const { showLoader, hideLoader } = await import('./loader.js');
   const { config } = window.PerceptionToolkit;
-  const { root = '', sitemapUrl, detectionMode } = config;
+  const { sitemapUrl, detectionMode = 'passive' } = config;
 
   if (config && config.onboardingImages && config.onboarding) {
     hideLoader();
 
-    const { startOnboardingProcess } = window.PerceptionToolkit.Onboarding;
+    const { startOnboardingProcess } = await import('./onboarding.js');
     await startOnboardingProcess(config.onboardingImages);
   }
 
   showLoader();
 
-  // Load the main experience if necessary.
-  if (!mainHasLoaded) {
-    mainHasLoaded =
-        await injectScript(`${root}/lib/bundled/perception-toolkit/main.min.js`);
-  }
+  const { initialize } = await import('./main.js');
 
-  const { initialize } = window.PerceptionToolkit.Main;
+  // Now the experience is inited, update the closeExperience fn.
+  window.PerceptionToolkit.Functions.closeExperience = close;
+
   initialize({ detectionMode, sitemapUrl });
 }
 
@@ -162,7 +181,7 @@ function addCardToPage({msg = '', cls = ''}) {
 // Bootstrap.
 (async function() {
   const supported = await load;
-  const { hideLoader, showLoader } = window.PerceptionToolkit.Loader;
+  const { hideLoader, showLoader } = await import('./loader.js');
   const { config } = window.PerceptionToolkit;
   const { buttonVisibilityClass = 'visible' } = config;
 
@@ -195,7 +214,7 @@ function addCardToPage({msg = '', cls = ''}) {
   });
 
   // When captureclose is fired, show the button again.
-  window.addEventListener('captureclose', () => {
+  window.addEventListener(captureStopped, () => {
     getStarted.classList.add(buttonVisibilityClass);
   });
 })();

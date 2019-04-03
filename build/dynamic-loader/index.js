@@ -68,7 +68,7 @@ export default function dynamicLoader(opts = {}) {
       if (!code.startsWith("define([")) {
         magicCode.prepend("[],");
       }
-      magicCode.prepend(`define("${id}",`);
+      magicCode.prepend(`perceptionToolkitLoader("${id}",`);
 
       // If not already done, resolve input names to fully qualified moduled IDs
       if (!resolvedInputs) {

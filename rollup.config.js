@@ -47,6 +47,7 @@ export default [{
   output: {
     dir: 'lib/bundled',
     format: 'amd',
-    exports: 'named'
+    exports: 'named',
+    chunkFileNames: 'pt-chunk-[hash].js'
   }
 }];

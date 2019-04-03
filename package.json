@@ -40,6 +40,7 @@
     "node-gzip": "^1.1.2",
     "rimraf": "^2.6.3",
     "rollup": "^1.8.0",
+    "rollup-plugin-license": "^0.8.1",
     "rollup-plugin-terser": "^4.0.4",
     "rollup-plugin-typescript": "^1.0.1",
     "rollup-plugin-typescript2": "^0.20.1",

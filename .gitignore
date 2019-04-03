@@ -6,3 +6,4 @@ src/*.js
 .vscode
 docs
 .rpt2_cache
+*.swp

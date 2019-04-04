@@ -62,8 +62,8 @@ export class MeaningMaker {
   /**
    * Load artifact content from url on same origin, usually discovered from environment.
    */
-  async loadArtifactsFromValidOriginUrls(url: URL,
-                                         shouldFetchArtifactsFrom?: ShouldFetchArtifactsFromCallback) {
+  async loadArtifactsFromSupportedUrls(url: URL,
+                                       shouldFetchArtifactsFrom?: ShouldFetchArtifactsFromCallback) {
     // If there's no callback provided, match to current origin.
     if (!shouldFetchArtifactsFrom) {
       shouldFetchArtifactsFrom = (url: URL) => url.origin === window.location.origin;
@@ -91,7 +91,7 @@ export class MeaningMaker {
       // Do not supply a base url argument, since we do not want to support relative URLs,
       // and because that would turn lots of normal string values into valid relative URLs.
       const url = new URL(marker.value);
-      await this.loadArtifactsFromValidOriginUrls(url, shouldFetchArtifactsFrom);
+      await this.loadArtifactsFromSupportedUrls(url, shouldFetchArtifactsFrom);
     } catch (_) {
       // Do nothing if this isn't a valid URL
     }

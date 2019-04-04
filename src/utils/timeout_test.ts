@@ -24,7 +24,7 @@ describe('Timeout', () => {
     const start = window.performance.now();
     await timeout(100);
     const delta = window.performance.now() - start;
-    assert.isAbove(delta, 95);
-    assert.isBelow(delta, 105);
+    assert.isAbove(delta, 90);
+    assert.isBelow(delta, 110);
   });
 });

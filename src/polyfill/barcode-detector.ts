@@ -62,7 +62,8 @@ export class BarcodeDetectorPolyfill {
     });
   }
 
-  async detect(pixels: ImageData | HTMLImageElement): Promise<Barcode[] | null> {
+  async detect(pixels: ImageData | HTMLImageElement | HTMLCanvasElement):
+      Promise<Barcode[] | null> {
     if (!this.hasLoaded) {
       return null;
     }
@@ -72,8 +73,19 @@ export class BarcodeDetectorPolyfill {
       if (isImageData(pixels)) {
         imageData = pixels;
       } else {
-        this.canvas.width = pixels.naturalWidth;
-        this.canvas.height = pixels.naturalHeight;
+        let width = pixels.width;
+        let height = pixels.height;
+
+        if ('naturalWidth' in pixels && pixels.naturalWidth) {
+          width = pixels.naturalWidth;
+        }
+
+        if ('naturalHeight' in pixels && pixels.naturalHeight) {
+          height = pixels.naturalHeight;
+        }
+
+        this.canvas.width = width;
+        this.canvas.height = height;
         this.ctx.drawImage(pixels, 0, 0);
 
         imageData =

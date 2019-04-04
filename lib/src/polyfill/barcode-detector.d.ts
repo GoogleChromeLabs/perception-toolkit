@@ -24,5 +24,5 @@ export declare class BarcodeDetectorPolyfill {
     private isReadyInternal;
     readonly isReady: Promise<boolean>;
     constructor(path?: string);
-    detect(pixels: ImageData | HTMLImageElement): Promise<Barcode[] | null>;
+    detect(pixels: ImageData | HTMLImageElement | HTMLCanvasElement): Promise<Barcode[] | null>;
 }

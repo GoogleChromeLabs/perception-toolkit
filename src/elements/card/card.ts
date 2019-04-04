@@ -22,6 +22,7 @@ declare global {
 }
 
 import { fade } from '../../utils/fade.js';
+import { DEBUG_LEVEL, log } from '../../utils/logger.js';
 import { html, styles } from './card.template.js';
 
 export interface CardData {
@@ -181,7 +182,7 @@ export class Card extends HTMLElement {
 
       container.appendChild(iframe);
     } else {
-      console.warn('Unexpected card content', this.src);
+      log(`Unexpected card content: ${this.src}`, DEBUG_LEVEL.WARNING);
       container.textContent = 'Unexpected content';
       container.classList.add('padded');
     }

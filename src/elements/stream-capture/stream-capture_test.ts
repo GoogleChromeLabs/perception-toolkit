@@ -24,7 +24,7 @@ declare global {
 const { assert } = chai;
 
 import { isImageData } from '../../utils/is-image-data.js';
-import { StreamCapture } from './stream-capture.js';
+import { frameEvent, startEvent, stopEvent, StreamCapture } from './stream-capture.js';
 customElements.define(StreamCapture.defaultTagName, StreamCapture);
 
 const width = 400;
@@ -84,7 +84,7 @@ describe('StreamCapture', function() {
   it('captures images', (done) => {
     capture.start(stream);
 
-    capture.addEventListener(StreamCapture.startEvent, async () => {
+    capture.addEventListener(startEvent, async () => {
       const imgData = await capture.captureFrame();
       assert.equal(imgData.width, width * capture.captureScale);
       assert.equal(imgData.height, height * capture.captureScale);
@@ -103,7 +103,7 @@ describe('StreamCapture', function() {
     capture.start(stream);
     capture.capturePng = true;
 
-    capture.addEventListener(StreamCapture.startEvent, async () => {
+    capture.addEventListener(startEvent, async () => {
       const imgData = await capture.captureFrame();
       assert.equal(imgData.width, width * capture.captureScale);
       assert.equal(imgData.height, height * capture.captureScale);
@@ -121,7 +121,7 @@ describe('StreamCapture', function() {
     capture.start(stream);
     capture.captureRate = 100;
 
-    capture.addEventListener(StreamCapture.frameEvent, (evt) => {
+    capture.addEventListener(frameEvent, (evt) => {
       const { detail } = evt as CustomEvent<{imgData: ImageData}>;
       const { imgData } = detail;
 
@@ -138,7 +138,7 @@ describe('StreamCapture', function() {
     capture.capturePng = true;
     capture.captureRate = 100;
 
-    capture.addEventListener(StreamCapture.frameEvent, (evt) => {
+    capture.addEventListener(frameEvent, (evt) => {
       const { detail } = evt as CustomEvent<{imgData: HTMLImageElement}>;
       const { imgData } = detail;
 
@@ -153,7 +153,7 @@ describe('StreamCapture', function() {
     capture.flipped = true;
     capture.start(stream);
 
-    capture.addEventListener(StreamCapture.startEvent, async () => {
+    capture.addEventListener(startEvent, async () => {
       const imgData = await capture.captureFrame();
       assert.equal(imgData.width, width * capture.captureScale);
       assert.equal(imgData.height, height * capture.captureScale);
@@ -182,7 +182,7 @@ describe('StreamCapture', function() {
     document.body.appendChild(capture);
 
     setTimeout(() => {
-      capture.addEventListener(StreamCapture.stopEvent, () => {
+      capture.addEventListener(stopEvent, () => {
         done();
       });
       capture.remove();
@@ -191,7 +191,7 @@ describe('StreamCapture', function() {
 
   it('handles stop calls when already stopped', (done) => {
     capture.start(stream);
-    capture.addEventListener(StreamCapture.startEvent, () => {
+    capture.addEventListener(startEvent, () => {
       capture.stop();
       assert.doesNotThrow(() => capture.stop());
       done();

@@ -63,7 +63,7 @@ describe('BarcodeDetector', () => {
   it('handles Image elements', async () => {
     const BarcodeDetector = new BarcodeDetectorPolyfill(workerValidUrl);
     await BarcodeDetector.isReady;
-    const value = await BarcodeDetector.detect(new Image());
+    const value = await BarcodeDetector.detect(new Image(20, 20));
     assert.isDefined(value);
   });
 

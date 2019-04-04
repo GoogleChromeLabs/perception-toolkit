@@ -84,6 +84,7 @@ describe('BarcodeDetector', () => {
     }
 
     const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 100;
     const barcodes = await detectBarcodes(canvas, { forceNewDetector: true });
 
     assert.deepEqual(barcodes, []);

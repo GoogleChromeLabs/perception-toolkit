@@ -18,4 +18,4 @@
  * Convenience function used internally for detecting `ImageData` vs
  * `HTMLImageElement`.
  */
-export declare function isImageData(imgData: ImageData | HTMLImageElement): imgData is ImageData;
+export declare function isImageData(imgData: ImageData | HTMLImageElement | HTMLCanvasElement): imgData is ImageData;

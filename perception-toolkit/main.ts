@@ -130,18 +130,8 @@ async function onMarkerFound(evt: Event) {
   const marker: Marker = { type: 'qrcode', value: detail };
   const { shouldLoadArtifactsFrom } = window.PerceptionToolkit.config;
 
-  let shouldLoadArtifactFromCallback;
-  if (Array.isArray(shouldLoadArtifactsFrom)) {
-    shouldLoadArtifactFromCallback = (url: URL) => {
-      return shouldLoadArtifactsFrom.find(u => u === url.origin) !== undefined;
-    };
-  } else {
-    shouldLoadArtifactFromCallback = shouldLoadArtifactsFrom;
-  }
-
   // Update the UI
-  const contentDiffs = await meaningMaker.markerFound(marker,
-      shouldLoadArtifactFromCallback);
+  const contentDiffs = await meaningMaker.markerFound(marker, shouldLoadArtifactsFrom);
   const markerChangeEvt = fire(markerChanges, capture, contentDiffs);
 
   // If the developer prevents default on the marker changes event then don't

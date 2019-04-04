@@ -22,7 +22,7 @@ import { ARArtifact } from '../src/artifacts/schema/ar-artifact';
 import { GeoCoordinates } from '../src/artifacts/schema/geo-coordinates';
 import { LocalArtifactStore } from '../src/artifacts/stores/local-artifact-store';
 
-type ShouldFetchArtifactsFromCallback = (url: URL) => boolean;
+type ShouldFetchArtifactsFromCallback = ((url: URL) => boolean) | string[];
 
 /*
  * MeaningMaker binds the Artifacts components with the rest of the Perception Toolkit.
@@ -64,11 +64,16 @@ export class MeaningMaker {
    */
   async loadArtifactsFromValidOriginUrls(url: URL,
                                          shouldFetchArtifactsFrom?: ShouldFetchArtifactsFromCallback) {
-    // If there is a set of supported provided, use that. Otherwise ensure that
-    // the origin of the target and hosting document match.
-    if (shouldFetchArtifactsFrom && !shouldFetchArtifactsFrom(url)) {
-      return;
-    } else if (url.origin !== window.location.origin) {
+    // If there's no callback provided, match to current origin.
+    if (!shouldFetchArtifactsFrom) {
+      shouldFetchArtifactsFrom = (url: URL) => url.origin === window.location.origin;
+    } else if (Array.isArray(shouldFetchArtifactsFrom)) {
+      // If an array of strings, remap it.
+      const origins = shouldFetchArtifactsFrom;
+      shouldFetchArtifactsFrom = (url: URL) => !!origins.find(o => o === url.origin);
+    }
+
+    if (!shouldFetchArtifactsFrom(url)) {
       return;
     }
 

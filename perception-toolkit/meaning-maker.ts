@@ -22,6 +22,13 @@ import { ARArtifact } from '../src/artifacts/schema/ar-artifact';
 import { GeoCoordinates } from '../src/artifacts/schema/geo-coordinates';
 import { LocalArtifactStore } from '../src/artifacts/stores/local-artifact-store';
 
+type SupportedOriginsCallback = (origin: string) => boolean;
+type SupportedOrigins = SupportedOriginsCallback | string[];
+
+function isSupportedOriginsCallback(s: SupportedOrigins): s is SupportedOriginsCallback {
+  return typeof s === 'function';
+}
+
 /*
  * MeaningMaker binds the Artifacts components with the rest of the Perception Toolkit.
  * It providess a good set of default behaviours, and can be replaced with alternative
@@ -60,11 +67,20 @@ export class MeaningMaker {
   /**
    * Load artifact content from url on same origin, usually discovered from environment.
    */
-  async loadArtifactsFromSameOriginUrl(url: URL) {
-    // Ensure this URL is on same origin
-    if (url.hostname !== window.location.hostname ||
-        url.port !== window.location.port ||
-        url.protocol !== window.location.protocol) {
+  async loadArtifactsFromValidOriginUrls(url: URL, supportedOrigins?: SupportedOrigins) {
+    // If there is a set of supported provided, use that. Otherwise ensure that
+    // the origin of the target and hosting document match.
+    if (supportedOrigins) {
+      if (isSupportedOriginsCallback(supportedOrigins)) {
+        if (!supportedOrigins(url.origin)) {
+          return;
+        }
+      } else {
+        if (!supportedOrigins.find(o => o === url.origin)) {
+          return;
+        }
+      }
+    } else if (url.origin !== window.location.origin) {
       return;
     }
 
@@ -74,14 +90,15 @@ export class MeaningMaker {
     }
   }
 
-  async markerFound(marker: Marker): Promise<NearbyResultDelta> {
+  async markerFound(marker: Marker, supportedOrigins?: SupportedOrigins):
+      Promise<NearbyResultDelta> {
     // If this marker is a URL, try loading artifacts from that URL
     try {
       // Attempt to convert markerValue to URL.  This will throw if markerValue isn't a valid URL.
       // Do not supply a base url argument, since we do not want to support relative URLs,
       // and because that would turn lots of normal string values into valid relative URLs.
       const url = new URL(marker.value);
-      await this.loadArtifactsFromSameOriginUrl(url);
+      await this.loadArtifactsFromValidOriginUrls(url, supportedOrigins);
     } catch (_) {
       // Do nothing if this isn't a valid URL
     }

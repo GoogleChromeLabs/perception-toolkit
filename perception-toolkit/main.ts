@@ -129,9 +129,10 @@ async function updateContentDisplay(contentDiff: NearbyResultDelta) {
 async function onMarkerFound(evt: Event) {
   const { detail } = evt as CustomEvent<string>;
   const marker: Marker = { type: 'qrcode', value: detail };
+  const { supportedOrigins } = window.PerceptionToolkit.config;
 
   // Update the UI
-  const contentDiffs = await meaningMaker.markerFound(marker);
+  const contentDiffs = await meaningMaker.markerFound(marker, supportedOrigins);
   const markerChangeEvt = fire(markerChanges, capture, contentDiffs);
 
   // If the developer prevents default on the marker changes event then don't

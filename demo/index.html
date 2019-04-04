@@ -160,8 +160,15 @@
         onload() {
           addEventListeners();
         },
-        supportedTargetOrigins(origin) {
-          return origin === 'http://localhost:8080' || 'http://localhost:8081';
+        shouldLoadArtifactsFrom(url) {
+          switch (url.origin) {
+            case 'http://localhost:8080':
+            case 'http://localhost:8081':
+              return true;
+
+            default:
+              return false;
+          }
         }
       };
 

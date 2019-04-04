@@ -22,12 +22,7 @@ import { ARArtifact } from '../src/artifacts/schema/ar-artifact';
 import { GeoCoordinates } from '../src/artifacts/schema/geo-coordinates';
 import { LocalArtifactStore } from '../src/artifacts/stores/local-artifact-store';
 
-type SupportedOriginsCallback = (origin: string) => boolean;
-type SupportedOrigins = SupportedOriginsCallback | string[];
-
-function isSupportedOriginsCallback(s: SupportedOrigins): s is SupportedOriginsCallback {
-  return typeof s === 'function';
-}
+type ShouldFetchArtifactsFromCallback = (url: URL) => boolean;
 
 /*
  * MeaningMaker binds the Artifacts components with the rest of the Perception Toolkit.
@@ -67,19 +62,12 @@ export class MeaningMaker {
   /**
    * Load artifact content from url on same origin, usually discovered from environment.
    */
-  async loadArtifactsFromValidOriginUrls(url: URL, supportedTargetOrigins?: SupportedOrigins) {
+  async loadArtifactsFromValidOriginUrls(url: URL,
+                                         shouldFetchArtifactsFrom?: ShouldFetchArtifactsFromCallback) {
     // If there is a set of supported provided, use that. Otherwise ensure that
     // the origin of the target and hosting document match.
-    if (supportedTargetOrigins) {
-      if (isSupportedOriginsCallback(supportedTargetOrigins)) {
-        if (!supportedTargetOrigins(url.origin)) {
-          return;
-        }
-      } else {
-        if (!supportedTargetOrigins.find(o => o === url.origin)) {
-          return;
-        }
-      }
+    if (shouldFetchArtifactsFrom && !shouldFetchArtifactsFrom(url)) {
+      return;
     } else if (url.origin !== window.location.origin) {
       return;
     }
@@ -90,7 +78,7 @@ export class MeaningMaker {
     }
   }
 
-  async markerFound(marker: Marker, supportedTargetOrigins?: SupportedOrigins):
+  async markerFound(marker: Marker, shouldFetchArtifactsFrom?: ShouldFetchArtifactsFromCallback):
       Promise<NearbyResultDelta> {
     // If this marker is a URL, try loading artifacts from that URL
     try {
@@ -98,7 +86,7 @@ export class MeaningMaker {
       // Do not supply a base url argument, since we do not want to support relative URLs,
       // and because that would turn lots of normal string values into valid relative URLs.
       const url = new URL(marker.value);
-      await this.loadArtifactsFromValidOriginUrls(url, supportedTargetOrigins);
+      await this.loadArtifactsFromValidOriginUrls(url, shouldFetchArtifactsFrom);
     } catch (_) {
       // Do nothing if this isn't a valid URL
     }

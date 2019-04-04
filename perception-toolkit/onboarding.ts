@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { OnboardingCard } from '../src/elements/onboarding-card/onboarding-card.js';
 import { fire } from '../src/utils/fire.js';
 import { loadImages } from '../src/utils/load-images.js';

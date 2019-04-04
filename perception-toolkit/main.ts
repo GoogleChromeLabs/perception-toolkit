@@ -133,7 +133,7 @@ async function onMarkerFound(evt: Event) {
   let shouldLoadArtifactFromCallback;
   if (Array.isArray(shouldLoadArtifactsFrom)) {
     shouldLoadArtifactFromCallback = (url: URL) => {
-      return shouldLoadArtifactsFrom.find(u => u === url.href) !== undefined;
+      return shouldLoadArtifactsFrom.find(u => u === url.origin) !== undefined;
     };
   } else {
     shouldLoadArtifactFromCallback = shouldLoadArtifactsFrom;

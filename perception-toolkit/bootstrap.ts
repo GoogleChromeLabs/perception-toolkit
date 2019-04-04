@@ -38,7 +38,7 @@ declare global {
         showLoaderDuringBoot?: boolean,
         sitemapUrl?: string,
         onload?: () => void,
-        supportedOrigins?: ((o: string) => boolean) | string[];
+        supportedTargetOrigins?: ((o: string) => boolean) | string[];
       },
 
       Events: {

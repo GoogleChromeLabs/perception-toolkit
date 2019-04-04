@@ -67,16 +67,16 @@ export class MeaningMaker {
   /**
    * Load artifact content from url on same origin, usually discovered from environment.
    */
-  async loadArtifactsFromValidOriginUrls(url: URL, supportedOrigins?: SupportedOrigins) {
+  async loadArtifactsFromValidOriginUrls(url: URL, supportedTargetOrigins?: SupportedOrigins) {
     // If there is a set of supported provided, use that. Otherwise ensure that
     // the origin of the target and hosting document match.
-    if (supportedOrigins) {
-      if (isSupportedOriginsCallback(supportedOrigins)) {
-        if (!supportedOrigins(url.origin)) {
+    if (supportedTargetOrigins) {
+      if (isSupportedOriginsCallback(supportedTargetOrigins)) {
+        if (!supportedTargetOrigins(url.origin)) {
           return;
         }
       } else {
-        if (!supportedOrigins.find(o => o === url.origin)) {
+        if (!supportedTargetOrigins.find(o => o === url.origin)) {
           return;
         }
       }
@@ -90,7 +90,7 @@ export class MeaningMaker {
     }
   }
 
-  async markerFound(marker: Marker, supportedOrigins?: SupportedOrigins):
+  async markerFound(marker: Marker, supportedTargetOrigins?: SupportedOrigins):
       Promise<NearbyResultDelta> {
     // If this marker is a URL, try loading artifacts from that URL
     try {
@@ -98,7 +98,7 @@ export class MeaningMaker {
       // Do not supply a base url argument, since we do not want to support relative URLs,
       // and because that would turn lots of normal string values into valid relative URLs.
       const url = new URL(marker.value);
-      await this.loadArtifactsFromValidOriginUrls(url, supportedOrigins);
+      await this.loadArtifactsFromValidOriginUrls(url, supportedTargetOrigins);
     } catch (_) {
       // Do nothing if this isn't a valid URL
     }

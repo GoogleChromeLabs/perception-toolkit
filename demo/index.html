@@ -159,15 +159,18 @@
         sitemapUrl: './barcode-listing-sitemap.jsonld',
         onload() {
           addEventListeners();
+        },
+        supportedTargetOrigins(origin) {
+          return origin === 'http://localhost:8080' || 'http://localhost:8081';
         }
       };
 
       // When the toolkit loads, add event listeners.
       function addEventListeners() {
-        const PT = window.PerceptionToolkit;
+        const { Events, Elements } = window.PerceptionToolkit;
 
         // Fires with a diff of markers found & lost.
-        window.addEventListener(PT.Events.MarkerChanges, (evt) => {
+        window.addEventListener(Events.MarkerChanges, (evt) => {
           const { found, lost } = evt.detail;
 
           // For the cases where we know something was found,
@@ -177,22 +180,20 @@
             return;
           }
 
-          const { Card } = window.PerceptionToolkit.Main;
-          const card = new Card();
+          const card = new Elements.Card();
           card.src = 'Sorry, this item was not recognized.';
           cardContainer.appendChild(card);
         });
 
         // Fires the if the user denies camera access.
-        window.addEventListener(PT.Events.CameraAccessDenied, () => {
-          const { Card } = window.PerceptionToolkit.Main;
-          const card = new Card();
+        window.addEventListener(Events.CameraAccessDenied, () => {
+          const card = new Elements.Card();
           card.src = 'Camera unavailable or access denied';
           cardContainer.appendChild(card);
         });
 
         // Fires the if the device does not have the required APIs.
-        window.addEventListener(PT.Events.DeviceNotSupported, () => {
+        window.addEventListener(Events.DeviceNotSupported, () => {
           console.warn('Device Not Supported');
         });
       }

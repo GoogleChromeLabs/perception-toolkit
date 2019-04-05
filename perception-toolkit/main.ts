@@ -108,7 +108,7 @@ async function beginDetection({ detectionMode = 'passive', sitemapUrl }: InitOpt
  * Whenever we find nearby content, show it
  */
 async function updateContentDisplay(contentDiff: NearbyResultDelta) {
-  const { cardContainer } = window.PerceptionToolkit.config;
+  const { cardContainer, cardUrlLabel } = window.PerceptionToolkit.config;
 
   // Prevent multiple cards from showing.
   if (!cardContainer || cardContainer.hasChildNodes()) {
@@ -117,9 +117,27 @@ async function updateContentDisplay(contentDiff: NearbyResultDelta) {
 
   for (const { content } of contentDiff.found) {
     // Create a card for every found marker.
+    const cardContent = content as CardData;
     const card = new Card();
-    card.src = content as CardData;
+    card.src = cardContent;
     cardContainer.appendChild(card);
+
+    if (typeof cardContent.url === 'undefined') {
+      continue;
+    }
+
+    const targetUrl = cardContent.url;
+    const viewDetails = new ActionButton();
+    viewDetails.label = cardUrlLabel || 'View Details';
+    viewDetails.addEventListener('click', () => {
+      if (!targetUrl) {
+        return;
+      }
+
+      window.location.href = targetUrl;
+    });
+
+    card.appendChild(viewDetails);
   }
 }
 /*

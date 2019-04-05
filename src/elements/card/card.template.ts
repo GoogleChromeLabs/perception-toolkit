@@ -85,20 +85,24 @@ slot {
 
 #title {
   padding: var(--baseline);
-  font-size: 14px;
+  padding-bottom: 0;
+  font-size: 18px;
   font-weight: 400;
   margin: 0;
+  color: #3A3A3A;
 }
 
 #description {
-  padding: var(--baseline);
-  font-size: 16px;
+  padding: 0 var(--baseline);
+  padding-top: 6px;
+  font-size: 14px;
   font-weight: 400;
-  min-height: calc(var(--baseline) * 2);
   margin: 0;
+  color: #696969;
 }
 
 #image {
+  margin-top: var(--baseline);
   background-color: #111;
   background-size: cover;
   background-position: center center;

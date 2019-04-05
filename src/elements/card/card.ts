@@ -202,20 +202,20 @@ export class Card extends HTMLElement {
       container.appendChild(title);
     }
 
-    if (data.image) {
-      const img = document.createElement('div');
-      img.setAttribute('id', 'image');
-      img.style.backgroundImage = `url(${data.image})`;
-
-      container.appendChild(img);
-    }
-
     if (data.description) {
       const description = document.createElement('div');
       description.setAttribute('id', 'description');
       description.textContent = data.description;
 
       container.appendChild(description);
+    }
+
+    if (data.image) {
+      const img = document.createElement('div');
+      img.setAttribute('id', 'image');
+      img.style.backgroundImage = `url(${data.image})`;
+
+      container.appendChild(img);
     }
   }
 

@@ -26,6 +26,7 @@ declare global {
                 buttonSelector?: string;
                 buttonVisibilityClass?: string;
                 cardContainer?: HTMLElement;
+                cardUrlLabel?: string;
                 hintTimeout?: number;
                 detectionMode?: 'active' | 'passive';
                 showLoaderDuringBoot?: boolean;

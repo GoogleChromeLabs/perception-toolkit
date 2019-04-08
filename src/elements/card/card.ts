@@ -35,6 +35,9 @@ export interface CardData {
     currency: string;
   };
   url?: string;
+  mainEntity?: {
+    url?: string;
+  };
 }
 
 /**

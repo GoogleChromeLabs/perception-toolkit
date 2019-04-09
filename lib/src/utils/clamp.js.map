@@ -1,1 +1,0 @@
-{"version":3,"file":"clamp.js","sourceRoot":"/","sources":["src/utils/clamp.ts"],"names":[],"mappings":"AAAA;;;;;;;;;;;;;;;GAeG;AAEH;;;;;;;GAOG;AACH,MAAM,UAAU,KAAK,CAAC,KAAa,EACb,GAAG,GAAG,MAAM,CAAC,iBAAiB,EAC9B,GAAG,GAAG,MAAM,CAAC,iBAAiB;IAClD,OAAO,IAAI,CAAC,GAAG,CAAC,GAAG,EAAE,IAAI,CAAC,GAAG,CAAC,GAAG,EAAE,KAAK,CAAC,CAAC,CAAC;AAC7C,CAAC"}

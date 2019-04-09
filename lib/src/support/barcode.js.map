@@ -1,1 +1,0 @@
-{"version":3,"file":"barcode.js","sourceRoot":"/","sources":["src/support/barcode.ts"],"names":[],"mappings":"AAAA;;;;;;;;;;;;;;;GAeG;AAEH,MAAM,CAAC,MAAM,sBAAsB,GAAG;IACpC,IAAI,EAAE,SAAS;IACf,SAAS,EAAE,KAAK,IAAI,EAAE;QACpB,OAAO,iBAAiB,IAAI,IAAI,CAAC;IACnC,CAAC;CACF,CAAC"}

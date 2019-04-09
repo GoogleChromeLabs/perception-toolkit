@@ -1,1 +1,0 @@
-{"version":3,"file":"get-user-media.js","sourceRoot":"/","sources":["src/support/get-user-media.ts"],"names":[],"mappings":"AAAA;;;;;;;;;;;;;;;GAeG;AAEH,MAAM,CAAC,MAAM,mBAAmB,GAAG;IACjC,IAAI,EAAE,cAAc;IACpB,SAAS,EAAE,KAAK,IAAI,EAAE;QACpB,OAAO,cAAc,IAAI,IAAI,CAAC,SAAS;YACnC,cAAc,IAAI,IAAI,CAAC,SAAS,CAAC,YAAY,CAAC;IACpD,CAAC;CACF,CAAC"}

@@ -7,3 +7,4 @@ src/*.js
 docs
 .rpt2_cache
 *.swp
+lib

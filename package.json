@@ -12,7 +12,8 @@
     "gzip": "find lib -type f -name '*.js' -exec gzip -kf \"{}\" \\;",
     "polyfill": "node build/polyfills.js",
     "serve": "http-server -g -c0 --cors=\"*\"",
-    "test": "karma start"
+    "test": "karma start",
+    "postinstall": "npm run build"
   },
   "license": "apache-2.0",
   "devDependencies": {

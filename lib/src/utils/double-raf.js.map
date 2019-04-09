@@ -1,1 +1,0 @@
-{"version":3,"file":"double-raf.js","sourceRoot":"/","sources":["src/utils/double-raf.ts"],"names":[],"mappings":"AAAA;;;;;;;;;;;;;;;GAeG;AAEH;;;;;;;GAOG;AACH,MAAM,UAAU,SAAS;IACvB,OAAO,IAAI,OAAO,CAAC,CAAC,OAAO,EAAE,EAAE;QAC7B,qBAAqB,CAAC,GAAG,EAAE;YACzB,qBAAqB,CAAC,GAAG,EAAE,CAAC,OAAO,EAAE,CAAC,CAAC;QACzC,CAAC,CAAC,CAAC;IACL,CAAC,CAAC,CAAC;AACL,CAAC"}

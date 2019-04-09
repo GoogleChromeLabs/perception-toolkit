@@ -17,19 +17,22 @@
 
 const { assert } = chai;
 
-import { flat } from './flat.js';
+import { flatPolyfill } from './flat.js';
 
 describe('Flat', () => {
   it('flattens 1 level deep', () => {
-    assert.deepEqual(flat([1, 2, [3, 4]]), [1, 2, 3, 4]);
+    assert.deepEqual(flatPolyfill([1, 2, [3, 4]]), [1, 2, 3, 4]);
   });
+
   it('flattens only 1 level deep by default', () => {
-    assert.deepEqual(flat([1, 2, [3, 4, [5, 6]]]), [1, 2, 3, 4, [5, 6]]);
+    assert.deepEqual(flatPolyfill([1, 2, [3, 4, [5, 6]]]), [1, 2, 3, 4, [5, 6]]);
   });
+
   it('flattens multiple levels deep when asked', () => {
-    assert.deepEqual(flat([1, 2, [3, 4, [5, 6]]], 2), [1, 2, 3, 4, 5, 6]);
+    assert.deepEqual(flatPolyfill([1, 2, [3, 4, [5, 6]]], 2), [1, 2, 3, 4, 5, 6]);
   });
+
   it('removes empty slots in arrays', () => {
-    assert.deepEqual(flat([1, 2, /* none */, 4, 5]), [1, 2, 4, 5]);
+    assert.deepEqual(flatPolyfill([1, 2, /* none */, 4, 5]), [1, 2, 4, 5]);
   });
 });

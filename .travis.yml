@@ -6,8 +6,9 @@ dist: trusty
 node_js: '11.9.0'
 addons:
   chrome: stable
+  firefox: latest
 cache:
   directories:
   - node_modules
 script:
-  npm run test
+  xvfb-run npm test

@@ -37,14 +37,13 @@ export function flatMapPolyfill<T, U>(
   }, []);
 }
 
+/* istanbul ignore next */
 export function flatMap<T, U, This = undefined>(
       arr: T[],
       callback: (this: This, value: T, index: number, array: T[]) => U|ReadonlyArray<U>,
       thisArg?: This
     ): U[] {
   if ('flatMap' in Array.prototype) {
-    // ts-ignore used to pass karma tests.  TS complains flatMap() is not defined, even though we are feature detecting.
-    // @ts-ignore
     return arr.flatMap(callback);
   } else {
     return flatMapPolyfill(arr, callback);

@@ -17,7 +17,7 @@
 
 const { assert } = chai;
 
-import { flatMap } from './flat-map.js';
+import { flatMapPolyfill as flatMap } from './flat-map.js';
 
 describe('FlatMap', () => {
   const arr1 = [1, 2, 3, 4];

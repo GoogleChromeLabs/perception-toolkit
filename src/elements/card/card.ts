@@ -216,6 +216,10 @@ export class Card extends HTMLElement {
       img.setAttribute('id', 'image');
       img.style.backgroundImage = `url(${data.image})`;
 
+      if (data.description || data.name) {
+        img.classList.add('top-margin');
+      }
+
       container.appendChild(img);
     }
   }

@@ -102,13 +102,16 @@ slot {
 }
 
 #image {
-  margin-top: var(--baseline);
   background-color: #111;
   background-size: cover;
   background-position: center center;
   min-width: 300px;
   min-height: 210px;
   transition: background-image 1s ease-out;
+}
+
+#image.top-margin {
+  margin-top: var(--baseline);
 }
 `;
 

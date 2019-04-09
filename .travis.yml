@@ -3,7 +3,6 @@ sudo: false
 dist: trusty
 node_js: '11.9.0'
 addons:
-  firefox: latest
   chrome: stable
 cache:
   directories:

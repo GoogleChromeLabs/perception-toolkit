@@ -19,6 +19,7 @@ import { WasmModule } from './wasm-module.js';
 
 export interface Barcode {
   rawValue: string;
+  format: string;
 }
 
 export interface BarcodeDetector {

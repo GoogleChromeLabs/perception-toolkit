@@ -37,7 +37,7 @@ import { MeaningMaker } from './meaning-maker.js';
 
 import { cameraAccessDenied, markerChanges, markerDetect } from './events.js';
 
-const detectedMarkers = new Map<string, number>();
+const detectedMarkers = new Map<{value: string, format: string}, number>();
 
 const meaningMaker = new MeaningMaker();
 
@@ -144,8 +144,9 @@ async function updateContentDisplay(contentDiff: NearbyResultDelta) {
  * Handle Marker discovery
  */
 async function onMarkerFound(evt: Event) {
-  const { detail } = evt as CustomEvent<string>;
-  const marker: Marker = { type: 'qrcode', value: detail };
+  const { detail } = evt as CustomEvent<{value: string, format: string}>;
+  const { value, format } = detail;
+  const marker: Marker = { type: format, value };
   const { shouldLoadArtifactsFrom } = window.PerceptionToolkit.config;
 
   // Update the UI
@@ -277,16 +278,17 @@ async function onCaptureFrame(evt: Event) {
   const markers = await detectBarcodes(imgData, { polyfillPrefix });
 
   for (const marker of markers) {
-    const markerAlreadyDetected = detectedMarkers.has(marker.rawValue);
+    const value = { value: marker.rawValue, format: marker.format };
+    const markerAlreadyDetected = detectedMarkers.has(value);
 
     // Update the last time for this marker.
-    detectedMarkers.set(marker.rawValue, self.performance.now());
+    detectedMarkers.set(value, self.performance.now());
     if (markerAlreadyDetected) {
       continue;
     }
 
     // Only fire the event if the marker is freshly detected.
-    fire(markerDetect, capture, marker.rawValue);
+    fire(markerDetect, capture, value);
   }
 
   if (markers.length > 0) {
@@ -304,14 +306,14 @@ async function onCaptureFrame(evt: Event) {
   setTimeout(async () => {
     const now = self.performance.now();
     const removals = [];
-    for (const [value, timeLastSeen] of detectedMarkers.entries()) {
+    for (const [markerValue, timeLastSeen] of detectedMarkers.entries()) {
       if (now - timeLastSeen < 1000) {
         continue;
       }
 
-      const marker: Marker = { type: 'qrcode', value };
+      const marker: Marker = { value: markerValue.value, type: markerValue.format };
       removals.push(meaningMaker.markerLost(marker));
-      detectedMarkers.delete(value);
+      detectedMarkers.delete(markerValue);
     }
 
     // Wait for all dealer removals to conclude.

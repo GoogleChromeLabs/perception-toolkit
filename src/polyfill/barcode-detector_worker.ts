@@ -36,8 +36,8 @@ class WasmBarcodeDetector {
         Module.readBarcodeFromPng(data.data, data.width, data.height);
     Module._free(buffer);
 
-    if (result.text) {
-      return [{rawValue: result.text}];
+    if (result.text && result.format) {
+      return [{rawValue: result.text, format: result.format.toLowerCase()}];
     }
 
     return [];

@@ -17,13 +17,13 @@
 
 import { styles } from './overlay.template.js';
 
-function getOverlay({ id = 'pt.overlay', small = false, create = true } = {}) {
+function getOverlay({ id = 'pt.overlay', small = false, createIfNecessary = true } = {}) {
   const existingOverlay = document.getElementById(id);
   if (existingOverlay) {
     return existingOverlay;
   }
 
-  if (!create) {
+  if (!createIfNecessary) {
     return;
   }
 
@@ -67,7 +67,7 @@ export function showOverlay(message: string,
  * @hidden
  */
 export function hideOverlay({id = 'pt.overlay'} = {}) {
-  const overlay = getOverlay({id});
+  const overlay = getOverlay({id, createIfNecessary: false});
   if (!overlay) {
     return;
   }

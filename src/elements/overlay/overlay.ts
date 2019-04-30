@@ -17,9 +17,27 @@
 
 import { styles } from './overlay.template.js';
 
-const overlay = document.createElement('div');
-const root = overlay.attachShadow({ mode: 'open' });
-root.innerHTML = `<style>${styles}</style><span class="content"><slot></slot></span>`;
+function getOverlay({ id = 'pt.overlay', small = false, create = true } = {}) {
+  const existingOverlay = document.getElementById(id);
+  if (existingOverlay) {
+    return existingOverlay;
+  }
+
+  if (!create) {
+    return;
+  }
+
+  const overlay = document.createElement('div');
+  overlay.id = id;
+  const root = overlay.attachShadow({ mode: 'open' });
+  root.innerHTML = `<style>${styles}</style><span class="content"><slot></slot></span>`;
+
+  if (small) {
+    overlay.classList.add('small');
+  }
+
+  return overlay;
+}
 
 /**
  * Shows an overlay message. If there is already an overlay message a second
@@ -27,7 +45,17 @@ root.innerHTML = `<style>${styles}</style><span class="content"><slot></slot></s
  *
  * @hidden
  */
-export function showOverlay(message: string, target = document.body) {
+export function showOverlay(message: string,
+                            {
+                              target = document.body,
+                              id = 'pt.overlay',
+                              small = false
+                            } = {}) {
+  const overlay = getOverlay({id, small});
+  if (!overlay) {
+    return;
+  }
+
   overlay.textContent = message;
   target.appendChild(overlay);
   return overlay;
@@ -38,6 +66,11 @@ export function showOverlay(message: string, target = document.body) {
  *
  * @hidden
  */
-export function hideOverlay() {
+export function hideOverlay({id = 'pt.overlay'} = {}) {
+  const overlay = getOverlay({id});
+  if (!overlay) {
+    return;
+  }
+
   overlay.remove();
 }

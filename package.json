@@ -6,11 +6,12 @@
   "jsnext:main": "lib/index.js",
   "scripts": {
     "docs": "typedoc --theme minimal --tsconfig ./tsconfig.docs.json",
-    "build": "npm run compile && npm run bundle && npm run polyfill",
+    "build": "npm run compile && npm run bundle && npm run polyfill && npm run planar",
     "bundle": "rollup -c",
     "compile": "rimraf ./lib && tsc",
     "gzip": "find lib -type f -name '*.js' -exec gzip -kf \"{}\" \\;",
     "polyfill": "node build/polyfills.js",
+    "planar": "node build/planar.js",
     "serve": "http-server -g -c0 --cors=\"*\"",
     "test": "npm run build && karma start",
     "postinstall": "npm run build"

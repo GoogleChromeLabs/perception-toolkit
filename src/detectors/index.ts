@@ -15,4 +15,5 @@
  * limitations under the License.
  */
 
-export * from './barcode.js';
+export * from './marker/barcode.js';
+export * from './planar-image/planar-image.js';

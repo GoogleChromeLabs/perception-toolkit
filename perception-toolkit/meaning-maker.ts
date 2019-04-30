@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
+import { DetectableImage, DetectedImage } from '../defs/detected-image.js';
 import { Marker } from '../defs/marker.js';
 import { ArtifactDealer, NearbyResultDelta } from '../src/artifacts/artifact-dealer.js';
 import { ArtifactLoader } from '../src/artifacts/artifact-loader.js';
-import { ARArtifact } from '../src/artifacts/schema/extension-ar-artifacts.js';
 import { GeoCoordinates } from '../src/artifacts/schema/core-schema-org.js';
+import { ARArtifact } from '../src/artifacts/schema/extension-ar-artifacts.js';
 import { LocalArtifactStore } from '../src/artifacts/stores/local-artifact-store.js';
-import { DetectableImage, DetectedImage } from '../defs/detected-image.js';
 
 type ShouldFetchArtifactsFromCallback = ((url: URL) => boolean) | string[];
 

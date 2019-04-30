@@ -17,14 +17,10 @@
 
 import { WasmModule } from './wasm-module.js';
 
-export interface Barcode {
-  rawValue: string;
-  format: string;
-}
-
 export interface BarcodeDetector {
   isReady?: Promise<void>;
-  detect(data: ImageData | ImageBitmap | HTMLCanvasElement): Promise<Barcode[]>;
+  detect(data: ImageData | ImageBitmap | HTMLCanvasElement):
+      Promise<Array<{ rawValue: string, format: string }>>;
 }
 
 declare global {

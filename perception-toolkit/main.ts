@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-import { detectBarcodes } from '../src/detectors/barcode.js';
+import { detectBarcodes } from '../src/detectors/marker/barcode.js';
+import { addDetectionTarget, detectPlanarImages, getTarget } from '../src/detectors/planar-image/planar-image.js';
 import { ActionButton } from '../src/elements/action-button/action-button.js';
 import { Card, CardData } from '../src/elements/card/card.js';
 import { DotLoader } from '../src/elements/dot-loader/dot-loader.js';
@@ -32,13 +33,12 @@ export { Card } from '../src/elements/card/card.js';
 export { ActionButton } from '../src/elements/action-button/action-button.js';
 
 import { Marker } from '../defs/marker.js';
-import { NearbyResultDelta } from '../src/artifacts/artifact-dealer.js';
+import { NearbyResult, NearbyResultDelta } from '../src/artifacts/artifact-dealer.js';
 import { MeaningMaker } from './meaning-maker.js';
 
 import { cameraAccessDenied, markerChanges, markerDetect } from './events.js';
 
-const detectedMarkers = new Map<{value: string, format: string}, number>();
-
+const detectedTargets = new Map<{value: string, format: string}, number>();
 const meaningMaker = new MeaningMaker();
 
 // Register custom elements.
@@ -75,10 +75,12 @@ switch (window.PerceptionToolkit.config.debugLevel) {
 
 // While the onboarding begins, attempt a fake detection. If the polyfill is
 // necessary, or the detection fails, we should find out.
-const polyfillPrefix = window.PerceptionToolkit.config.root || '';
+const root = window.PerceptionToolkit.config.root || '';
 
 // TODO: Attempt the correct detection based on the target types.
-const attemptDetection = detectBarcodes(new ImageData(1, 1), { polyfillPrefix });
+const attemptMarkerDetection = detectBarcodes(new ImageData(1, 1), { root });
+const attemptPlanarDetection = detectPlanarImages(new ImageData(1, 1), { root });
+let planarDetectionReady = false;
 
 interface InitOpts {
   detectionMode: 'active' | 'passive';
@@ -109,8 +111,9 @@ export async function initialize(opts: InitOpts) {
  */
 async function beginDetection({ detectionMode = 'passive', sitemapUrl }: InitOpts) {
   try {
-    // Wait for the faked detection to resolve.
-    await attemptDetection;
+    // Wait for the faked detections to resolve.
+    // TODO(paullewis): Make this based on the required detections.
+    await Promise.all([attemptMarkerDetection]);
 
     // Initialize MeaningMaker
     await meaningMaker.init();
@@ -120,6 +123,51 @@ async function beginDetection({ detectionMode = 'passive', sitemapUrl }: InitOpt
 
     // Create the stream.
     await createStreamCapture(detectionMode);
+
+    const detectableImages = await meaningMaker.getDetectableImages();
+    if (detectableImages.length) {
+      const overlayInit = { id: 'pt.imagedetect', small: true };
+      showOverlay('Initializing image detector...', overlayInit);
+
+      // Wait for fake detection.
+      await attemptPlanarDetection;
+
+      showOverlay('Initializing image targets...', overlayInit);
+
+      // Enable detection for any targets.
+      let imageCount = 0;
+      for (const image of detectableImages) {
+        for (const media of image.media) {
+          // If the object does not match our requirements, bail.
+          if (!media['@type'] || media['@type'] !== 'MediaObject' ||
+              !media.contentUrl || !media.encodingFormat ||
+              media.encodingFormat !== 'application/octet+pd') {
+            continue;
+          }
+
+          const url = media.contentUrl.toString();
+          log(`Loading ${url}`, DEBUG_LEVEL.VERBOSE);
+
+          // Obtain a Uint8Array for the file.
+          try {
+            const bytes = await fetch(url)
+                .then(r => r.arrayBuffer())
+                .then(b => new Uint8Array(b));
+
+            // Switch on detection.
+            log(`Adding detection target: ${image.id}`);
+            addDetectionTarget(bytes, image);
+            imageCount++;
+          } catch (e) {
+            log(`Unable to load ${url}`, DEBUG_LEVEL.WARNING);
+          }
+        }
+      }
+
+      hideOverlay(overlayInit);
+      planarDetectionReady = true;
+      log(`${imageCount} target(s) added`, DEBUG_LEVEL.INFO);
+    }
   } catch (e) {
     log(e.message, DEBUG_LEVEL.ERROR, 'Begin detection');
   }
@@ -202,7 +250,27 @@ async function onMarkerFound(evt: Event) {
   const { shouldLoadArtifactsFrom } = window.PerceptionToolkit.config;
 
   // Update the UI
-  const contentDiffs = await meaningMaker.markerFound(marker, shouldLoadArtifactsFrom);
+  const lost: NearbyResult[] = [];
+  const found: NearbyResult[] = [];
+  switch (format) {
+    case 'ARImageTarget':
+      const image = await getTarget(marker.value);
+      if (!image) {
+        break;
+      }
+
+      const imageDiff = await meaningMaker.imageFound(image);
+      lost.push(...imageDiff.lost);
+      found.push(...imageDiff.found);
+      break;
+
+    case 'Barcode':
+      const markerDiff = await meaningMaker.markerFound(marker, shouldLoadArtifactsFrom);
+      lost.push(...markerDiff.lost);
+      found.push(...markerDiff.found);
+      break;
+  }
+  const contentDiffs = { lost, found };
   const markerChangeEvt = fire(markerChanges, capture, contentDiffs);
 
   // If the developer prevents default on the marker changes event then don't
@@ -229,7 +297,7 @@ const capture = new StreamCapture();
  */
 async function createStreamCapture(detectionMode: 'active' | 'passive') {
   if (detectionMode === 'passive') {
-    capture.captureRate = 600;
+    capture.captureRate = 400;
   } else {
     showOverlay('Tap to capture');
     capture.addEventListener('click', async () => {
@@ -239,7 +307,7 @@ async function createStreamCapture(detectionMode: 'active' | 'passive') {
       fire(frameEvent, capture, {imgData, detectionMode});
     });
   }
-  capture.captureScale = 0.8;
+  capture.captureScale = 1;
   capture.addEventListener(closeEvent, close);
   capture.addEventListener(markerDetect, onMarkerFound);
 
@@ -255,6 +323,7 @@ async function createStreamCapture(detectionMode: 'active' | 'passive') {
 
     capture.start(stream);
     document.body.appendChild(capture);
+    console.log('Capture started', performance.now());
 
     hintTimeout = setTimeout(() => {
       showOverlay('Make sure the marker is inside the box.');
@@ -329,16 +398,20 @@ async function onCaptureFrame(evt: Event) {
   const { detail } = evt as CustomEvent<{imgData: ImageData, detectionMode?: string}>;
   const { detectionMode, imgData } = detail;
 
-  // TODO: Expand with other types besides barcodes.
-  const markers = await detectBarcodes(imgData, { polyfillPrefix });
+  const detections = [
+    detectBarcodes(imgData, { root }),
+    planarDetectionReady ?
+        detectPlanarImages(imgData, { root }) : Promise.resolve([])
+  ];
 
-  for (const marker of markers) {
-    const value = { value: marker.rawValue, format: marker.format };
-    const markerAlreadyDetected = detectedMarkers.has(value);
+  const targets = await Promise.all(detections);
+  for (const target of [...targets[0], ...targets[1]]) {
+    const value = { value: target.value, format: target.type };
+    const targetAlreadyDetected = detectedTargets.has(value);
 
     // Update the last time for this marker.
-    detectedMarkers.set(value, self.performance.now());
-    if (markerAlreadyDetected) {
+    detectedTargets.set(value, self.performance.now());
+    if (targetAlreadyDetected) {
       continue;
     }
 
@@ -348,7 +421,8 @@ async function onCaptureFrame(evt: Event) {
     fire(markerDetect, capture, value);
   }
 
-  if (markers.length > 0) {
+  if (targets[0].length > 0 ||
+      targets[1].length > 0) {
     // Hide the hint if it's shown. Cancel it if it's pending.
     clearTimeout(hintTimeout);
     hideOverlay();
@@ -363,14 +437,28 @@ async function onCaptureFrame(evt: Event) {
   setTimeout(async () => {
     const now = self.performance.now();
     const removals = [];
-    for (const [markerValue, timeLastSeen] of detectedMarkers.entries()) {
+    for (const [markerValue, timeLastSeen] of detectedTargets.entries()) {
       if (now - timeLastSeen < 1000) {
         continue;
       }
 
       const marker: Marker = { value: markerValue.value, type: markerValue.format };
-      removals.push(meaningMaker.markerLost(marker));
-      detectedMarkers.delete(markerValue);
+      switch (marker.type) {
+        case 'Barcode':
+          removals.push(meaningMaker.markerLost(marker));
+          break;
+
+        case 'ARImageTarget':
+          const image = await getTarget(marker.value);
+          if (!image) {
+            break;
+          }
+
+          removals.push(meaningMaker.imageLost(image));
+          break;
+      }
+
+      detectedTargets.delete(markerValue);
     }
 
     // Wait for all dealer removals to conclude.

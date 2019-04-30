@@ -25,7 +25,6 @@ import { fade } from '../../utils/fade.js';
 import { DEBUG_LEVEL, log } from '../../utils/logger.js';
 import { html, styles } from './card.template.js';
 
-
 /**
  * Represents card data, and closely resembles `arContent`.
  *

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Barcode } from '../../defs/barcode.js';
+import { Marker } from '../../defs/marker.js';
 import { isImageData } from '../utils/is-image-data.js';
 
 export class BarcodeDetectorPolyfill {
@@ -63,7 +63,7 @@ export class BarcodeDetectorPolyfill {
   }
 
   async detect(pixels: ImageData | HTMLImageElement | HTMLCanvasElement):
-      Promise<Barcode[] | null> {
+      Promise<Marker[] | null> {
     if (!this.hasLoaded) {
       return null;
     }

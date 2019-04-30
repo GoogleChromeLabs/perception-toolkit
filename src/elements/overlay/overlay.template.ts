@@ -33,4 +33,12 @@ export const styles = `
   font-size: 18px;
   z-index: 2;
 }
+
+:host(.small) {
+  font-size: 14px;
+  top: auto;
+  bottom: var(--baseline);
+  min-width: 0;
+  white-space: nowrap;
+}
 `;

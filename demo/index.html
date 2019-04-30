@@ -118,24 +118,42 @@
       "@type": "ARArtifact",
       "arTarget": {
         "@type": "ARImageTarget",
-        "name": "Image Target Test 1",
-        "image": "http://localhost:8080/demo/images/step1.jpg",
+        "name": "Lighthouse",
+        "image": "http://localhost:8080/demo/images/lighthouse.jpg",
         "encoding": [
           {
             "@type": "MediaObject",
-            "contentUrl": "http://localhost:8080/demo/images/test.pd",
+            "contentUrl": "http://localhost:8080/demo/planar/lighthouse.pb",
             "encodingFormat": "application/octet+pd"
           }
         ]
       },
       "arContent": {
         "@type": "WebPage",
-        "url": "http://localhost:8080/demo/index.html",
-        "name": "This is an Image Result",
-        "description": "Description",
-        "image": "http://localhost:8080/demo/images/step1.jpg"
+        "url": "https://developers.google.com/web/tools/lighthouse/",
+        "name": "Lighthouse",
+        "description": "Test your website",
+        "image": "http://localhost:8080/demo/images/lighthouse.jpg"
       }
     }]
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "ARArtifact",
+      "arTarget": {
+        "@type": "Barcode",
+        "text": "sample"
+      },
+      "arContent": {
+        "@type": "WebPage",
+        "url": "http://localhost:8080/demo/index.html",
+        "name": "Tyler's profile!",
+        "image": "http://localhost:8080/demo/images/profile.png"
+      }
+    }
+
     </script>
 
     <script type="application/ld+json" src="barcode-listing-linked.jsonld"></script>
@@ -164,7 +182,7 @@
       window.PerceptionToolkit = window.PerceptionToolkit || {};
       window.PerceptionToolkit.config = {
         // Debug level.
-        debugLevel: 'info',
+        debugLevel: 'verbose',
 
         // The element to use to launch.
         button: document.getElementById('get-started'),

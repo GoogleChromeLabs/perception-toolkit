@@ -76,6 +76,7 @@ self.onmessage = (e: MessageEvent) => {
       addCount++;
       break;
 
+    // Remove a target.
     case 'remove':
       detector.cancelDetection(data);
       host.postMessage();

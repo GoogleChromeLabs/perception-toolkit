@@ -207,9 +207,8 @@ export class StreamCapture extends HTMLElement {
 
       // Flip the canvas if -- say -- the camera is pointing at the user.
       if (this.flipped) {
-        this.ctx.translate(this.canvas.width * 0.5, 0);
-        this.ctx.scale(-1, 1);
-        this.ctx.translate(-this.canvas.width * 0.5, 0);
+        this.canvas.style.transform = 'scaleX(-1)';
+        this.canvas.style.zIndex = '-1';
       }
 
       requestAnimationFrame((now) => {

@@ -211,6 +211,11 @@
           // ignore. For the zero case we know there was a
           // scan of something we don't currently recognize.
           if (found.length !== 0 || lost.length !== 0) {
+            const notRecognizedCard =
+                cardContainer.querySelector('[data-not-recognized]');
+            if (notRecognizedCard) {
+              notRecognizedCard.remove();
+            }
             return;
           }
 
@@ -218,8 +223,12 @@
             return;
           }
 
+          // Take ownership of rendering.
+          evt.preventDefault();
+
           const card = new Elements.Card();
           card.src = 'Sorry, this item was not recognized.';
+          card.dataset.notRecognized = true;
           cardContainer.appendChild(card);
         });
 

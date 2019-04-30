@@ -24,6 +24,7 @@ declare global {
   const Module: any;
 }
 
+import { DEBUG_LEVEL, log } from '../utils/logger.js';
 import { WasmHeapWriter } from './wasm-heap-writer.js';
 
 /**
@@ -40,7 +41,6 @@ export class PlanarTargetDetector {
     this.pixelsSize = 0;
 
     Module.preRun.push(() => {
-      console.log('Loaded wasm module.');
       this.hasLoaded = true;
     });
   }
@@ -92,7 +92,7 @@ export class PlanarTargetDetector {
     const frameDataPtr = frameDataWriter.getData();
 
     // We use embind version so we can tap more easily into std::vector
-    const outputVec = Module['process'](frameDataPtr);
+    const outputVec = Module.process(frameDataPtr);
     Module._free(frameDataPtr);
     return outputVec;
   }
@@ -115,7 +115,7 @@ export class PlanarTargetDetector {
    */
   addDetectionWithId(objectId: number, detectorIndexData: Uint8Array) {
     if (!this.hasLoaded) {
-      console.log('Cannot add detection until detection has started.');
+      log('Cannot add detection until detection has started.', DEBUG_LEVEL.ERROR);
       return;
     }
     const size = detectorIndexData.length;
@@ -150,7 +150,7 @@ export class PlanarTargetDetector {
    */
   cancelDetection(objectId: number) {
     if (!this.hasLoaded) {
-      console.log('Cannot cancel detection until detection has started.');
+      log('Cannot cancel detection until detection has started.', DEBUG_LEVEL.ERROR);
       return;
     }
     Module._cancelObjectId(objectId);

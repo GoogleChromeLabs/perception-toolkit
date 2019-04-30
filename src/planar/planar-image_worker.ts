@@ -43,7 +43,6 @@ self.onmessage = (e: MessageEvent) => {
         },
 
         onRuntimeInitialized() {
-          console.log('Runtime ready', performance.now());
           (self as any).postMessage('ready');
         }
       };
@@ -61,7 +60,6 @@ self.onmessage = (e: MessageEvent) => {
   switch (type) {
     // Process image data.
     case 'process':
-      console.log('Processing frame', performance.now());
       const processResult = detector.process(data, Date.now());
       const detections: number[] = [];
       for (let r = 0; r < processResult.size(); r++) {
@@ -73,7 +71,6 @@ self.onmessage = (e: MessageEvent) => {
 
     // Add a target.
     case 'add':
-      console.log('Adding target', addCount, performance.now());
       detector.addDetectionWithId(addCount, data);
       host.postMessage(addCount);
       addCount++;

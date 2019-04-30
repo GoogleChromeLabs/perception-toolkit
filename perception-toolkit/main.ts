@@ -323,7 +323,6 @@ async function createStreamCapture(detectionMode: 'active' | 'passive') {
 
     capture.start(stream);
     document.body.appendChild(capture);
-    console.log('Capture started', performance.now());
 
     hintTimeout = setTimeout(() => {
       showOverlay('Make sure the marker is inside the box.');

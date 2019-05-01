@@ -25,7 +25,7 @@ export class ArtifactLoader {
   private readonly decoder = new ArtifactDecoder();
 
   async fromUrl(url: URL|string): Promise<ARArtifact[]> {
-    const response = await fetch(url.toString());
+    const response = await fetch(url.toString(), { credentials: 'include' });
     if (!response.ok) {
         throw Error(response.statusText);
     }
@@ -51,7 +51,7 @@ export class ArtifactLoader {
     // Note: this already proved issue when getting .src property of script/link tags, since relative
     // Urls are based off this document root, not the fetched source.
 
-    const response = await fetch(url.toString());
+    const response = await fetch(url.toString(), { credentials: 'include' });
     if (!response.ok) {
         throw Error(response.statusText);
     }
@@ -62,7 +62,7 @@ export class ArtifactLoader {
   }
 
   async fromJsonUrl(url: URL|string): Promise<ARArtifact[]> {
-    const response = await fetch(url.toString());
+    const response = await fetch(url.toString(), { credentials: 'include' });
     if (!response.ok) {
         throw Error(response.statusText);
     }

@@ -155,7 +155,7 @@ async function beginDetection({ detectionMode = 'passive' }: InitOpts) {
 
           // Obtain a Uint8Array for the file.
           try {
-            const bytes = await fetch(url)
+            const bytes = await fetch(url, { credentials: 'include' })
                 .then(r => r.arrayBuffer())
                 .then(b => new Uint8Array(b));
 

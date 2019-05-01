@@ -16,7 +16,7 @@ if (!self.perceptionToolkitLoader) {
   const singleRequire = async name => {
     if (!registry[name]) {
       <% if (useEval) { %>
-        const code = await fetch(name).then(resp => resp.text());
+        const code = await fetch(name, { credentials: 'same-origin' }).then(resp => resp.text());
         eval(code);
       <% } else { %>
         await new Promise(async resolve => {

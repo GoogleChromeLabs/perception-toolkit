@@ -64,7 +64,6 @@ export class PlanarTargetDetector {
     const height = imageData.height;
 
     // (Re-)allocate image memory space if needed.
-    // TODO(tmullen): Allow for a close() call and free up the image memory then
     const size = 4 * width * height;
     if (this.pixelsSize !== size) {
       if (this.pixelsPtr) {

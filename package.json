@@ -2,6 +2,7 @@
   "name": "perception-toolkit",
   "version": "0.0.1",
   "description": "",
+  "repository": "https://github.com/GoogleChromeLabs/perception-toolkit",
   "module": "lib/index.js",
   "jsnext:main": "lib/index.js",
   "scripts": {

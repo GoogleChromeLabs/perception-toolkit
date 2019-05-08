@@ -1,5 +1,8 @@
 # Perception Toolkit
 
+ [![Build Status](https://api.travis-ci.org/GoogleChromeLabs/perception-toolkit.svg?branch=master)](https://travis-ci.org/GoogleChromeLabs/perception-toolkit)
+ [![NPM](https://img.shields.io/npm/v/perception-toolkit.svg)](https://www.npmjs.com/package/perception-toolkit)
+
 This toolkit provides a set of components and utilities for developers to add an
 augmented experience to their website. For example, a primary use-case supported
 is the ability to detect barcodes (in -- say -- a real-world store) with the

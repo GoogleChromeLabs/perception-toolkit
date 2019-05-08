@@ -3,6 +3,10 @@
 We'd love to accept your patches and contributions to this project. There are
 just a few small guidelines you need to follow.
 
+Please file an issue before starting to code. This will give us a place to
+collaborate on the design and direction. All non-trivial pull requests
+(including those made by project members) require an associated issue.
+
 ## Contributor License Agreement
 
 Contributions to this project must be accompanied by a Contributor License

@@ -21,7 +21,7 @@ Included in this toolkit:
   * Barcode Detector (native / [ZXing](https://github.com/zxing))
   * QR Codes (native / [ZXing](https://github.com/zxing))
   * Geolocation (native)
-  * Planar Image
+  * 2D (Planar) Images
   * (TODO) ML Image Classification
 * UI
   * Loader

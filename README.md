@@ -30,9 +30,31 @@ Included in this toolkit is:
 
 ## Installation
 
-1. TODO.
+We recommend installation via [npm](https://npmjs.com). Simply:
 
-The intended use is detailed under `demo/`, where you can see how to set up barcode detection and the display of values to the end user.
+```
+npm install --save perception-toolkit
+```
+
+The intended use is detailed under `demo/`, where you can see how to set up barcode detection and the display of values to the end user. A good starting point is `demo/simple/index.html`, with a few small modifications to refer to `node_modules` (and assuming that `node_modules` is available at the root of your server, as it is with our sample server):
+
+* You must specify `root` in `window.PerceptionToolkit.config`:
+
+  ```
+  window.PerceptionToolkit.config = {
+    root: '/node_modules/perception-toolkit',
+    
+    ...
+  }
+  ```
+
+* You must change the location of `bootstrap.js`, included at the end of
+  `index.html`:
+  
+  ```
+  <script src="/node_modules/perception-toolkit/lib/bundled/bootstrap.js"></script>
+  ```
+
 
 ## Development
 

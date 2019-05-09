@@ -17,6 +17,7 @@
 
 const { assert } = chai;
 import { createStubInstance, spy } from 'sinon';
+import { Marker } from '../../../defs/marker.js';
 import { BarcodeDetectorPolyfill } from '../../polyfill/barcode-detector.js';
 import { detectBarcodes } from './barcode.js';
 

@@ -21,7 +21,7 @@ import { spy } from 'sinon';
 import { DEBUG_LEVEL, enableLogLevel, log, enableLogLevelFromString } from './logger.js';
 
 describe('log', () => {
-  let consoleLogSpy: sinon.SinonSpy;
+  let consoleInfoSpy: sinon.SinonSpy;
   let consoleWarnSpy: sinon.SinonSpy;
   let consoleErrorSpy: sinon.SinonSpy;
   beforeEach(() => {
@@ -38,19 +38,20 @@ describe('log', () => {
     consoleErrorSpy.restore();
   });
 
-  it('ignores logs by default', async () => {
-    log('foo', DEBUG_LEVEL.ERROR);
-    assert.isFalse(consoleLogSpy.called);
+  it('ignores logs at NONE', async () => {
+    enableLogLevel(DEBUG_LEVEL.NONE);
+    log('unset or NONE enabled - log at error - expect no output', DEBUG_LEVEL.ERROR);
+    assert.isFalse(consoleInfoSpy.called);
     assert.isFalse(consoleWarnSpy.called);
     assert.isFalse(consoleErrorSpy.called);
   });
 
   it('observes the correct logging level', async () => {
     enableLogLevel(DEBUG_LEVEL.WARNING);
-    log('foo', DEBUG_LEVEL.ERROR);
-    log('foo', DEBUG_LEVEL.WARNING);
-    log('foo', DEBUG_LEVEL.INFO);
-    assert.isFalse(consoleLogSpy.called);
+    log('enabled at warning - log at error', DEBUG_LEVEL.ERROR);
+    log('enabled at warning - log at warning', DEBUG_LEVEL.WARNING);
+    log('enabled at warning - log at info - should not print', DEBUG_LEVEL.INFO);
+    assert.isFalse(consoleInfoSpy.called);
     assert.isTrue(consoleWarnSpy.called);
     assert.isTrue(consoleErrorSpy.called);
   });
@@ -91,12 +92,12 @@ describe('log', () => {
   it('does not tag the message', async () => {
     enableLogLevel(DEBUG_LEVEL.INFO);
     log('foo', DEBUG_LEVEL.INFO);
-    assert.isTrue(consoleLogSpy.withArgs('INFO:', 'foo').calledOnce);
+    assert.isTrue(consoleInfoSpy.withArgs('INFO:', 'foo').calledOnce);
   });
 
   it('tags the message', async () => {
     enableLogLevel(DEBUG_LEVEL.INFO);
-    log('foo', DEBUG_LEVEL.INFO, 'bar');
-    assert.isTrue(consoleLogSpy.withArgs('INFO [bar]:', 'foo').calledOnce);
+    log('tagged message', DEBUG_LEVEL.INFO, 'tag for a message');
+    assert.isTrue(consoleInfoSpy.withArgs('INFO [tag for a message]:', 'tagged message').calledOnce);
   });
 });

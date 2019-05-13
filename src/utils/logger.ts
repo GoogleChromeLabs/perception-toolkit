@@ -84,11 +84,12 @@ declare const DEBUG: DEBUG_LEVEL;
  */
 export function log(msg: any, level: DEBUG_LEVEL = DEBUG_LEVEL.INFO,
                     tag?: string) {
-  if (typeof DEBUG === 'undefined' || level > DEBUG) {
+
+  if (typeof DEBUG === 'undefined' || DEBUG > level) {
     return;
   }
 
-  const label = applyTagIfProvided(level, tag);
+  const label = createLabel(level, tag);
   switch (level) {
     case DEBUG_LEVEL.ERROR:
       console.error(label, msg);
@@ -104,25 +105,25 @@ export function log(msg: any, level: DEBUG_LEVEL = DEBUG_LEVEL.INFO,
   }
 }
 
-function applyTagIfProvided(label: DEBUG_LEVEL, tag?: string) {
-  let labelStr = '';
-  switch (label) {
+function createLabel(level: DEBUG_LEVEL, tag?: string) {
+  let label = '';
+  switch (level) {
     case DEBUG_LEVEL.WARNING:
-      labelStr = 'WARNING';
+      label  = 'WARNING';
       break;
 
     case DEBUG_LEVEL.ERROR:
-      labelStr = 'ERROR';
+      label = 'ERROR';
       break;
 
     default:
-      labelStr = 'INFO';
+      label = 'INFO';
       break;
   }
 
   if (!tag) {
-    return `${labelStr}:`;
+    return `${label}:`;
+  } else {
+    return `${label} [${tag}]:`;
   }
-
-  return `${labelStr} [${tag}]:`;
 }

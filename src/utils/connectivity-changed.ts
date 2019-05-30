@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-
 import { hideOverlay, showOverlay } from '../elements/overlay/overlay.js';
 
 /**

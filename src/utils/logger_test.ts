@@ -18,7 +18,7 @@
 const { assert } = chai;
 
 import { spy } from 'sinon';
-import { DEBUG_LEVEL, enableLogLevel, log } from './logger.js';
+import { DEBUG_LEVEL, enableLogLevel, log, enableLogLevelFromString } from './logger.js';
 
 describe('log', () => {
   let consoleLogSpy: sinon.SinonSpy;
@@ -53,6 +53,29 @@ describe('log', () => {
     assert.isFalse(consoleLogSpy.called);
     assert.isTrue(consoleWarnSpy.called);
     assert.isTrue(consoleErrorSpy.called);
+  });
+
+  it('logs based on string vals', async () => {
+    const getDebugLevel = () => (self as any).DEBUG;
+
+    enableLogLevelFromString('warning');
+    assert.equal(getDebugLevel(), DEBUG_LEVEL.WARNING);
+
+    enableLogLevelFromString('info');
+    assert.equal(getDebugLevel(), DEBUG_LEVEL.INFO);
+
+    enableLogLevelFromString('error');
+    assert.equal(getDebugLevel(), DEBUG_LEVEL.ERROR);
+
+    enableLogLevelFromString('verbose');
+    assert.equal(getDebugLevel(), DEBUG_LEVEL.VERBOSE);
+
+    enableLogLevelFromString('none');
+    assert.equal(getDebugLevel(), DEBUG_LEVEL.NONE);
+
+    // Invalid strings should result in NONE.
+    enableLogLevelFromString('foo');
+    assert.equal(getDebugLevel(), DEBUG_LEVEL.NONE);
   });
 
   it('is verbose', async () => {

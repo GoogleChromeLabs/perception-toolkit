@@ -51,6 +51,7 @@ export enum DEBUG_LEVEL {
 export function enableLogLevel(level: DEBUG_LEVEL) {
   (self as any).DEBUG = level;
 }
+
 export function enableLogLevelFromString(level: string) {
   switch (level) {
     case 'verbose': return enableLogLevel(DEBUG_LEVEL.VERBOSE);

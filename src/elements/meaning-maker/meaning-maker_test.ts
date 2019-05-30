@@ -25,8 +25,7 @@ async function initMM() {
   return meaningMaker;
 }
 
-
-describe.only('Meaning Maker', () => {
+describe('Meaning Maker', () => {
   it('loads from URLs', async () => {
     const meaningMaker = await initMM();
 

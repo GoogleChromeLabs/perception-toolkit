@@ -15,13 +15,17 @@
  * limitations under the License.
  */
 
-import { replace } from 'sinon';
+import { replace, restore } from 'sinon';
 
 const { assert } = chai;
 
 import { geolocation } from './geolocation-async.js';
 
 describe('GetUserMediaSupport', () => {
+  afterEach(() => {
+    restore();
+  });
+
   it('returns a boolean', async () => {
     const data = {
       coords: {

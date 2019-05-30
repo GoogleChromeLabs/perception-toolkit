@@ -15,13 +15,23 @@
  * limitations under the License.
  */
 
-/**
- * Registers a custom element, ensuring it is not double-defined.
- */
-export function defineElement(name: string, base: {}) {
-  if (customElements.get(name)) {
-    return;
-  }
+const { assert } = chai;
 
-  customElements.define(name, base as unknown as () => void);
-}
+import { defineElement } from './define-element.js';
+
+describe('Define Element', () => {
+  it('defines elements', () => {
+    defineElement('x-foo', class Foo extends HTMLElement {});
+
+    assert.ok(customElements.get('x-foo'));
+  });
+
+  it('does not allow double definitions', () => {
+    class Bar extends HTMLElement {}
+
+    assert.doesNotThrow(() => {
+      defineElement('x-bar', Bar);
+      defineElement('x-bar', Bar);
+    });
+  });
+});

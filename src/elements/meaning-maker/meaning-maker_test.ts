@@ -19,10 +19,16 @@ const { assert } = chai;
 
 import { MeaningMaker } from './meaning-maker.js';
 
+async function initMM() {
+  const meaningMaker = new MeaningMaker();
+  await meaningMaker.init();
+  return meaningMaker;
+}
+
+
 describe.only('Meaning Maker', () => {
   it('loads from URLs', async () => {
-    const meaningMaker = new MeaningMaker();
-    await meaningMaker.init();
+    const meaningMaker = await initMM();
 
     const url = new URL('/base/test-assets/test1.html', window.location.href);
     const artifacts = await meaningMaker.loadArtifactsFromUrl(url);
@@ -30,8 +36,7 @@ describe.only('Meaning Maker', () => {
   });
 
   it('handles bad loads from URLs', async () => {
-    const meaningMaker = new MeaningMaker();
-    await meaningMaker.init();
+    const meaningMaker = await initMM();
 
     const url = new URL('bad-url.html', window.location.href);
     const artifacts = await meaningMaker.loadArtifactsFromUrl(url);
@@ -39,8 +44,7 @@ describe.only('Meaning Maker', () => {
   });
 
   it('loads from supported origins', async () => {
-    const meaningMaker = new MeaningMaker();
-    await meaningMaker.init();
+    const meaningMaker = await initMM();
 
     const url = new URL('/base/test-assets/test1.html', window.location.href);
     const artifacts =
@@ -51,8 +55,7 @@ describe.only('Meaning Maker', () => {
   });
 
   it('loads from same-origin if unspecified', async () => {
-    const meaningMaker = new MeaningMaker();
-    await meaningMaker.init();
+    const meaningMaker = await initMM();
 
     const url = new URL('/base/test-assets/test1.html', window.location.href);
     const artifacts = await meaningMaker.loadArtifactsFromSupportedUrl(url);
@@ -60,8 +63,7 @@ describe.only('Meaning Maker', () => {
   });
 
   it('ignores unsupported origins', async () => {
-    const meaningMaker = new MeaningMaker();
-    await meaningMaker.init();
+    const meaningMaker = await initMM();
 
     const url = new URL('/base/test-assets/test1.html', window.location.href);
     const artifacts =
@@ -72,8 +74,7 @@ describe.only('Meaning Maker', () => {
   });
 
   it('supports origins as strings', async () => {
-    const meaningMaker = new MeaningMaker();
-    await meaningMaker.init();
+    const meaningMaker = await initMM();
 
     const url = new URL('/base/test-assets/test1.html', window.location.href);
     const artifacts = await meaningMaker.loadArtifactsFromSupportedUrl(url,
@@ -82,13 +83,79 @@ describe.only('Meaning Maker', () => {
   });
 
   it('supports origins as strings', async () => {
-    const meaningMaker = new MeaningMaker();
-    await meaningMaker.init();
+    const meaningMaker = await initMM();
 
     const url = new URL('/base/test-assets/test-image.html', window.location.href);
     const artifacts = await meaningMaker.loadArtifactsFromSupportedUrl(url);
     const images = await meaningMaker.getDetectableImages();
     assert.equal(artifacts.length, 1, 'No artifacts');
     assert.equal(images.length, 1, 'No image artifacts');
+  });
+
+  it('finds and loses markers', async () => {
+    const meaningMaker = await initMM();
+    const url = new URL('/base/test-assets/test1.html', window.location.href);
+    const marker = {
+      type: 'qr_code',
+      value: url.href
+    };
+
+    const foundResponse = await meaningMaker.markerFound(marker);
+    assert.isDefined(foundResponse);
+    assert.equal(foundResponse.found.length, 1);
+    assert.equal(foundResponse.lost.length, 0);
+
+    const loseRespones = await meaningMaker.markerLost(marker);
+    assert.equal(loseRespones.found.length, 0);
+    assert.equal(loseRespones.lost.length, 1);
+  });
+
+  it('finds and loses images', async () => {
+    const meaningMaker = await initMM();
+    const url = new URL('/base/test-assets/test-image.html', window.location.href);
+    await meaningMaker.loadArtifactsFromUrl(url);
+
+    const detectedImage = {
+      id: 'Lighthouse',
+      type: 'ARImageTarget',
+    };
+
+    const foundResponse = await meaningMaker.imageFound(detectedImage);
+    assert.isDefined(foundResponse);
+    assert.equal(foundResponse.found.length, 1);
+    assert.equal(foundResponse.lost.length, 0);
+
+    const loseRespones = await meaningMaker.imageLost(detectedImage);
+    assert.equal(loseRespones.found.length, 0);
+    assert.equal(loseRespones.lost.length, 1);
+  });
+
+  it('accepts updated locations', async () => {
+    // TODO: Test for more meaningful filtering on locations.
+    const meaningMaker = await initMM();
+    const location = {
+      latitude: 1,
+      longitude: 1
+    };
+
+    const url = new URL('/base/test-assets/test1.html', window.location.href);
+    await meaningMaker.loadArtifactsFromUrl(url);
+
+    const marker = {
+      type: 'qr_code',
+      value: url.href
+    };
+
+    // Add the marker.
+    const foundResponse = await meaningMaker.markerFound(marker);
+    assert.isDefined(foundResponse);
+    assert.equal(foundResponse.found.length, 1);
+    assert.equal(foundResponse.lost.length, 0);
+
+    // Filter it out with location.
+    const locationResponse = await meaningMaker.updateGeolocation(location);
+    assert.isDefined(locationResponse);
+    assert.equal(locationResponse.found.length, 0);
+    assert.equal(locationResponse.lost.length, 0);
   });
 });

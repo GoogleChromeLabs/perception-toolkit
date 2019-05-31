@@ -26,7 +26,7 @@ declare global {
 
 enableLogLevel(DEBUG_LEVEL.VERBOSE);
 
-let addCount = 2010;
+let addCount = 1010;
 let detector: PlanarTargetDetector;
 self.onmessage = (e: MessageEvent) => {
   // Initializing.

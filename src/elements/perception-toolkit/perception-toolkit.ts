@@ -88,7 +88,7 @@ export class PerceptionToolkit extends HTMLElement {
   private readonly onMarkerFoundBound = this.onMarkerFound.bind(this);
   private readonly onCaptureFrameBound = this.onCaptureFrame.bind(this);
   private readonly onCloseBound = this.onClose.bind(this);
-  private readonly detections: Array<Promise<Marker[]>> = [];
+  private readonly startupDetections: Array<Promise<Marker[]>> = [];
   private readonly detectorsToUse = {
     barcode: true,
     image: false
@@ -207,6 +207,7 @@ export class PerceptionToolkit extends HTMLElement {
     const attemptData = new ImageData(640, 480);
     if (!detectors || detectors === 'lazy') {
       log('Loading detectors (lazy)', DEBUG_LEVEL.INFO, label);
+      this.startupDetections.push(detectBarcodes(attemptData, { root }));
       return;
     }
 
@@ -214,29 +215,29 @@ export class PerceptionToolkit extends HTMLElement {
     if (detectors === 'all') {
       log('Loading detectors (all)', DEBUG_LEVEL.INFO, label);
 
-      this.detections.push(detectBarcodes(attemptData, { root }));
-      this.detections.push(detectPlanarImages(attemptData, { root }));
+      this.startupDetections.push(detectBarcodes(attemptData, { root }));
+      this.startupDetections.push(detectPlanarImages(attemptData, { root }));
       this.detectorsToUse.barcode = true;
       this.detectorsToUse.image = true;
       return;
     }
 
     // Work on a case-by-case basis instead.
-    for (const detector of Object.keys(detectors)) {
-      if (detectors[detector] === 'lazy') {
-        log(`Loading ${detector} (lazy)`, DEBUG_LEVEL.INFO, label);
+    for (const [detectorName, detector] of Object.entries(detectors)) {
+      if (detector === 'lazy' || !detector) {
+        log(`Loading ${detectorName} (lazy)`, DEBUG_LEVEL.INFO, label);
         continue;
       }
 
-      log(`Loading ${detector} (full)`, DEBUG_LEVEL.INFO, label);
-      switch (detector) {
+      log(`Loading ${detectorName} (full)`, DEBUG_LEVEL.INFO, label);
+      switch (detectorName) {
         case 'barcode':
-          this.detections.push(detectBarcodes(attemptData, { root }));
+          this.startupDetections.push(detectBarcodes(attemptData, { root }));
           this.detectorsToUse.barcode = true;
           break;
 
         case 'image':
-          this.detections.push(detectPlanarImages(attemptData, { root }));
+          this.startupDetections.push(detectPlanarImages(attemptData, { root }));
           this.detectorsToUse.image = true;
           break;
       }
@@ -284,11 +285,14 @@ export class PerceptionToolkit extends HTMLElement {
       // Detectors.
       const overlayInit = { id: 'pt.detectors', small: true };
       showOverlay('Initializing detectors...', overlayInit);
-      await Promise.all(this.detections);
+      await Promise.all(this.startupDetections);
       hideOverlay(overlayInit);
 
       // Image targets.
-      await this.loadImageTargets();
+      if (this.detectorsToUse.image || detectors === 'lazy' ||
+          detectors === 'all') {
+        await this.loadImageTargets();
+      }
       this.hideLoaderIfNeeded();
     } catch (e) {
       log(e.message, DEBUG_LEVEL.ERROR, 'Detection');

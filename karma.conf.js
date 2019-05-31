@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-const debug = true;
+const debug = false;
 
 module.exports = function(config) {
   const options = {

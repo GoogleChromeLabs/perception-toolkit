@@ -26,7 +26,7 @@ export class WasmHeapWriter {
 
   constructor(size: number) {
     this.ptr = Module._malloc(size);
-    if (!this.ptr) {
+    if (typeof this.ptr === 'undefined' || this.ptr === null) {
       throw new Error(`Malloc failed: size (${size})`);
     }
 
@@ -63,7 +63,11 @@ export class WasmHeapWriter {
     this.offset += 1;
   }
 
-  writeBool(value: number) {
+  writeBool(value: 1 | 0 | boolean) {
+    /* istanbul ignore else */
+    if (typeof value === 'boolean') {
+      value = value ? 1 : 0;
+    }
     this.writeUint8(value);
   }
 
@@ -90,10 +94,12 @@ export class WasmHeapWriter {
   }
 
   // Caller takes ownership of the returned pointer.
-  getData() {
+  getData(warnOnByteMismatch = false) {
     this.snapToWordAlignment();
     const bytesWritten = this.offset;
-    if (bytesWritten !== this.size) {
+
+    /* istanbul ignore next */
+    if (warnOnByteMismatch && bytesWritten !== this.size) {
       console.error(
           'wrote ' + bytesWritten + ' bytes, but expected to write ' +
           this.size);

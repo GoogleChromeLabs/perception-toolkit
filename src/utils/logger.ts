@@ -85,7 +85,7 @@ declare const DEBUG: DEBUG_LEVEL;
 export function log(msg: any, level: DEBUG_LEVEL = DEBUG_LEVEL.INFO,
                     tag?: string) {
 
-  if (typeof DEBUG === 'undefined' || DEBUG > level) {
+  if (typeof DEBUG === 'undefined' || level > DEBUG) {
     return;
   }
 

@@ -26,14 +26,14 @@ describe('log', () => {
   let consoleErrorSpy: sinon.SinonSpy;
   beforeEach(() => {
     enableLogLevel(DEBUG_LEVEL.NONE);
-    consoleLogSpy = spy(console, 'log');
+    consoleInfoSpy = spy(console, 'log');
     consoleWarnSpy = spy(console, 'warn');
     consoleErrorSpy = spy(console, 'error');
   });
 
   afterEach(() => {
     enableLogLevel(DEBUG_LEVEL.NONE);
-    consoleLogSpy.restore();
+    consoleInfoSpy.restore();
     consoleWarnSpy.restore();
     consoleErrorSpy.restore();
   });
@@ -84,7 +84,7 @@ describe('log', () => {
     log('foo', DEBUG_LEVEL.INFO);
     log('foo', DEBUG_LEVEL.WARNING);
     log('foo', DEBUG_LEVEL.ERROR);
-    assert.isTrue(consoleLogSpy.called, 'Info was not called');
+    assert.isTrue(consoleInfoSpy.called, 'Info was not called');
     assert.isTrue(consoleWarnSpy.called, 'Warn was not called');
     assert.isTrue(consoleErrorSpy.called, 'Error was not called');
   });

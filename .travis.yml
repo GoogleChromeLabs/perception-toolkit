@@ -1,0 +1,14 @@
+language: node_js
+services:
+  - xvfb
+sudo: false
+dist: trusty
+node_js: '11.9.0'
+addons:
+  chrome: stable
+  firefox: latest
+cache:
+  directories:
+  - node_modules
+script:
+  xvfb-run npm test

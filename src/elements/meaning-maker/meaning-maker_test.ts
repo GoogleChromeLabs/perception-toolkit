@@ -81,7 +81,7 @@ describe('Meaning Maker', () => {
     assert.equal(artifacts.length, 1);
   });
 
-  it('supports origins as strings', async () => {
+  it('returns all Image Targets as detectableImages', async () => {
     const meaningMaker = await initMM();
 
     const url = new URL('/base/test-assets/test-image.html', window.location.href);
@@ -115,8 +115,7 @@ describe('Meaning Maker', () => {
     await meaningMaker.loadArtifactsFromUrl(url);
 
     const detectedImage = {
-      id: 'Lighthouse',
-      type: 'ARImageTarget',
+      id: 'Lighthouse'
     };
 
     const foundResponse = await meaningMaker.imageFound(detectedImage);
@@ -129,8 +128,8 @@ describe('Meaning Maker', () => {
     assert.equal(loseRespones.lost.length, 1);
   });
 
-  it('accepts updated locations', async () => {
-    // TODO: Test for more meaningful filtering on locations.
+  it('accepts updated locations without any geofenced artifacts', async () => {
+    // Location updates do not change results.
     const meaningMaker = await initMM();
     const location = {
       latitude: 1,

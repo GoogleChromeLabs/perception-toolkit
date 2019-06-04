@@ -1,4 +1,7 @@
-# Perception Toolkit
+# Web Perception Toolkit
+ [![Build Status](https://api.travis-ci.org/GoogleChromeLabs/perception-toolkit.svg?branch=master)](https://travis-ci.org/GoogleChromeLabs/perception-toolkit)
+ [![NPM](https://img.shields.io/npm/v/perception-toolkit.svg)](https://www.npmjs.com/package/perception-toolkit)
+
 
 <p align="center">
 <img alt="Perception Toolkit running on a phone" src="https://github.com/PolymerLabs/perception-toolkit/raw/master/assets/framed.jpg">

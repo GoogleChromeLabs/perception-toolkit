@@ -26,7 +26,8 @@ declare global {
 
 enableLogLevel(DEBUG_LEVEL.VERBOSE);
 
-let addCount = 1010;
+const START_INDEX = 1000;
+let addCount = START_INDEX;
 let detector: PlanarTargetDetector;
 self.onmessage = (e: MessageEvent) => {
   // Initializing.
@@ -60,7 +61,7 @@ self.onmessage = (e: MessageEvent) => {
   }
 
   const host = (self as any);
-  const { type, data } = e.data;
+  const { type, data, id } = e.data;
 
   switch (type) {
     // Process image data.
@@ -82,7 +83,7 @@ self.onmessage = (e: MessageEvent) => {
     // Add a target.
     case 'add':
       detector.addDetectionWithId(addCount, data);
-      host.postMessage(addCount);
+      host.postMessage({ idx: addCount, id });
       addCount++;
       break;
 
@@ -90,6 +91,13 @@ self.onmessage = (e: MessageEvent) => {
     case 'remove':
       detector.cancelDetection(data);
       host.postMessage(data);
+      break;
+
+    case 'reset':
+      // Currently resetting doesn't do anything on this side, but it may do so
+      // this can act as a placeholder for the time being.
+      addCount = START_INDEX;
+      host.postMessage({});
       break;
   }
 };

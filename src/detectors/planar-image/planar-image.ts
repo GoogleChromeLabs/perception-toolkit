@@ -21,7 +21,7 @@ import { Marker } from '../../../defs/marker.js';
 import { DEBUG_LEVEL, log } from '../../utils/logger.js';
 
 class Detector {
-  private readonly targets = new Map<number, DetectableImage>();
+  private readonly targets = new Map<number, { id: string }>();
   private isReadyInternal: Promise<void>;
   private worker!: Worker;
 
@@ -93,11 +93,12 @@ class Detector {
 
   addTarget(data: Uint8Array, image: DetectableImage): Promise<number> {
     return new Promise((resolve) => {
-      this.worker.postMessage({ type: 'add', data });
+      this.worker.postMessage({ type: 'add', data, id: image.id });
       this.worker.onmessage = (e) => {
-        this.targets.set(e.data as number, image);
-        log(`Target stored: ${image.id}, number ${e.data}`, DEBUG_LEVEL.VERBOSE);
-        resolve(e.data);
+        const { idx, id } = e.data;
+        this.targets.set(idx as number, { id });
+        log(`Target stored: ${id}, number ${idx}`, DEBUG_LEVEL.VERBOSE);
+        resolve(idx);
       };
     });
   }
@@ -113,8 +114,19 @@ class Detector {
     });
   }
 
-  clear() {
+  async clear() {
+    for (const id of this.targets.keys()) {
+      await this.removeTarget(id);
+    }
+
     this.targets.clear();
+    return new Promise((resolve) => {
+      this.worker.postMessage({ type: 'reset' });
+      this.worker.onmessage = (e) => {
+        log(`Image detector reset`, DEBUG_LEVEL.VERBOSE);
+        resolve();
+      };
+    });
   }
 }
 
@@ -163,12 +175,11 @@ export async function getTarget(id: string,
   return detector.getTarget(id);
 }
 
-export async function reset({root = ''} = {}) {
+export async function reset() {
   /* istanbul ignore if */
   if (!detector) {
-    detector = new Detector(root);
+    return;
   }
 
-  await detector.isReady;
   return detector.clear();
 }

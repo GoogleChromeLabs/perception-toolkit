@@ -27,7 +27,7 @@ import {
 import { NearbyResult, NearbyResultDelta } from '../../artifacts/artifact-dealer.js';
 import { ArtifactStore } from '../../artifacts/stores/artifact-store.js';
 import { detectBarcodes } from '../../detectors/marker/barcode.js';
-import { addDetectionTarget, detectPlanarImages, getTarget } from '../../detectors/planar-image/planar-image.js';
+import { addDetectionTarget, detectPlanarImages, getTarget, reset } from '../../detectors/planar-image/planar-image.js';
 import { cameraAccessDenied, captureClosed, captureFrame, markerDetect, perceivedResults } from '../../events.js';
 import { observeConnectivityChanges, unobserveConnectivityChanges} from '../../utils/connectivity-changed.js';
 import { supportsEnvironmentCamera } from '../../utils/environment-camera.js';
@@ -148,6 +148,9 @@ export class PerceptionToolkit extends HTMLElement {
     unobserveConnectivityChanges();
     hideOverlay();
     clearTimeout(this.hintTimeoutId);
+
+    // Reset the planar image detector.
+    reset();
 
     const onboarding = document.querySelector(OnboardingCard.defaultTagName);
     if (onboarding) {

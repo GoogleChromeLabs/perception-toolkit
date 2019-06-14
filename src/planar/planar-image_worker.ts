@@ -61,7 +61,7 @@ self.onmessage = (e: MessageEvent) => {
   }
 
   const host = (self as any);
-  const { type, data, id } = e.data;
+  const { type, data, id, msgId } = e.data;
 
   switch (type) {
     // Process image data.
@@ -73,31 +73,31 @@ self.onmessage = (e: MessageEvent) => {
           detections.push(processResult.get(r).id);
         }
 
-        host.postMessage(detections);
+        host.postMessage({ msgId, data: detections });
       } catch (e) {
         log(e.message, DEBUG_LEVEL.ERROR);
-        host.postMessage([]);
+        host.postMessage({ msgId, data: [] });
       }
       break;
 
     // Add a target.
     case 'add':
       detector.addDetectionWithId(addCount, data);
-      host.postMessage({ idx: addCount, id });
+      host.postMessage({ msgId, data: { idx: addCount, id } });
       addCount++;
       break;
 
     // Remove a target.
     case 'remove':
       detector.cancelDetection(data);
-      host.postMessage(data);
+      host.postMessage({ msgId, data });
       break;
 
     case 'reset':
       // Currently resetting doesn't do anything on this side, but it may do so
       // this can act as a placeholder for the time being.
       addCount = START_INDEX;
-      host.postMessage({});
+      host.postMessage({ msgId });
       break;
   }
 };

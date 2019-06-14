@@ -20,6 +20,19 @@ import { DetectableImage, DetectedImage } from '../../../defs/detected-image.js'
 import { Marker } from '../../../defs/marker.js';
 import { DEBUG_LEVEL, log } from '../../utils/logger.js';
 
+interface OutgoingWorkerMessage {
+  type: string;
+  data?: any;
+  id?: string;
+}
+
+interface AddCallbackVals {
+  idx: number;
+  id: string;
+}
+
+type ProcessCallbackValue = null | number[];
+
 class Detector {
   private readonly targets = new Map<number, DetectedImage>();
   private isReadyInternal: Promise<void>;
@@ -65,7 +78,7 @@ class Detector {
 
     return new Promise((resolve) => {
       const startTime = performance.now();
-      this.send({ type: 'process', data }, (processData: null | number[]) => {
+      this.send({ type: 'process', data }, (processData: ProcessCallbackValue) => {
         /* istanbul ignore if */
         if (processData === null) {
           return [];
@@ -104,7 +117,7 @@ class Detector {
 
   addTarget(data: Uint8Array, image: DetectableImage): Promise<number> {
     return new Promise((resolve) => {
-      this.send({ type: 'add', data, id: image.id }, (addData: {idx: number, id: string}) => {
+      this.send({ type: 'add', data, id: image.id }, (addData: AddCallbackVals) => {
         const { idx, id } = addData;
         this.targets.set(idx as number, { id });
         log(`Target stored: ${id}, number ${idx}`, DEBUG_LEVEL.VERBOSE);
@@ -137,7 +150,7 @@ class Detector {
     });
   }
 
-  private send(msg: { type: string, data?: any, id?: string }, callback: (data: any) => void) {
+  private send(msg: OutgoingWorkerMessage, callback: (data: any) => void) {
     const makeRandId = () => {
       // Array of zeros.
       return new Array(16).fill(0)

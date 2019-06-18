@@ -88,5 +88,5 @@ describe('BarcodeDetector', () => {
     const barcodes = await detectBarcodes(canvas, { forceNewDetector: true });
 
     assert.deepEqual(barcodes, []);
-  });
+  }).timeout(5000);
 });
